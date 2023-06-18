@@ -1,7 +1,6 @@
 package paddle
 
 import (
-	"fmt"
 	"gong/window"
 	"gong/UI"
 	"image/color"
@@ -52,24 +51,10 @@ func (p *Paddle) Init(playfield ui.Playfield) {
 	}
 }
 
-func (p *Paddle) canMove() bool {
-    // Checks all things NOT supposed to happen after moving
-    // e.g. going out of screen
-	const TOP_LIMIT = 20
-
-	fmt.Printf("Tail position: %f\n", p.body.Tail())
-	fmt.Printf("Head position: %f\n", p.body.Head())
-
-	if p.body.Tail() + p.Speed > float64(window.Win.Height - p.Height - 20) || p.body.Head() - p.Speed < TOP_LIMIT {
-		return false
-	}
-	return true
-}
-
 func (p *Paddle) move(directionModifier float64) {
 	oldYPos := p.Y
 	maxY, minY := 20, window.Win.Height - p.Height - 20
-	boundaryCollisionPush := p.Speed * 2
+	boundaryCollisionPush := p.Speed * 2 // Pushes paddle by value when colliding with playfield
 
 	// Bottom
 	if int(p.body.Tail() + p.Speed) >= minY {
@@ -102,8 +87,6 @@ func (p *Paddle) MoveDown() {
 }
 
 func (p *Paddle) Draw(screen *ebiten.Image) {
-	red := color.RGBA{R: 255, G: 0, B: 0, A: 1}
-    p.Img.Set(int(p.X), int(p.body.Tail()), red)
 	screen.DrawImage(p.Img, &p.ImgOpts)
 }
 
