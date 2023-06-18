@@ -19,6 +19,7 @@ const (
 
 	PADDLE_WIDTH = 10
 	PADDLE_HEIGHT = 100
+	PADDLE_SPEED = 2.0
 )
 
 // Game implements ebiten.Game interface.
@@ -31,27 +32,25 @@ type Game struct{
 }
 
 func NewGame() *Game {
-	centeredPaddles := (window.Win.Height / 2) - PADDLE_HEIGHT /2
-
 	game := &Game{ 
 		leftPlayer: player.Player{ 
 			Score: 0, 
 			Paddle: paddle.Paddle{
-				X: 20, 
-				Y: centeredPaddles,
+				X: 20.0, 
+				Y: window.Win.CenterY(),
 				Width: PADDLE_WIDTH,
 				Height: PADDLE_HEIGHT,
-				Speed: 4,
+				Speed: PADDLE_SPEED,
 			},
 		},
 		rightPlayer: player.Player{ 
 			Score: 0, 
 			Paddle: paddle.Paddle{
-				X: window.Win.HalfWidth() - 20, 
-				Y: centeredPaddles,
+				X: float64(window.Win.Width - 20), 
+				Y: window.Win.CenterY(),
 				Width: PADDLE_WIDTH,
 				Height: PADDLE_HEIGHT,
-				Speed: 4,
+				Speed: PADDLE_SPEED,
 			},
 		},
 		ball: ballImport.Ball{
@@ -113,8 +112,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(g.UI.Playfield.Img, &g.UI.Playfield.ImgOptsBottom)
 
 	// Draw paddles
-	g.rightPlayer.Paddle.Draw(screen)
-	g.leftPlayer.Paddle.Draw(screen)
+	screen.DrawImage(g.rightPlayer.Paddle.Img, &g.rightPlayer.Paddle.ImgOpts)
+	screen.DrawImage(g.leftPlayer.Paddle.Img, &g.leftPlayer.Paddle.ImgOpts)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {

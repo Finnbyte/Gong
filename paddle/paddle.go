@@ -25,13 +25,13 @@ func (body *PaddleBody) Center() int {
 }
 
 type Paddle struct {
-    X int
-	Y int
+    X float64
+	Y float64
     body PaddleBody
 	playfield ui.Playfield
     Width int
 	Height int
-	Speed int
+	Speed float64
 	Img *ebiten.Image
 	ImgOpts ebiten.DrawImageOptions
 }
@@ -42,7 +42,8 @@ func (p *Paddle) Init(playfield ui.Playfield) {
 	p.Img = ebiten.NewImage(p.Width, p.Height)
 	p.Img.Fill(color.White)
 
-	p.ImgOpts.GeoM.Translate(float64(p.X), float64(p.Y))
+	p.Y -= float64(p.Height / 2) // Account for height to center on the Y axis
+	p.ImgOpts.GeoM.Translate(p.X, p.Y)
 }
 
 func (p *Paddle) checkCanMove() bool {
@@ -51,7 +52,9 @@ func (p *Paddle) checkCanMove() bool {
 	// topPixel := p.Img.SubImage(image.Rect(p.Width, 1, p.Width, 1))
 	// bottomPixel := p.Img.SubImage(image.Rect(p.Width, p.Height - 1, p.Width, p.Height - 1))
 
-	if float64(p.Y + p.Speed) > float64(window.Win.Height - 20) {
+	fmt.Printf("Position above head: %f\n", p.Y - p.Speed)
+
+	if p.Y + p.Speed > float64(window.Win.Height - 20) {
 		fmt.Println("shit hit the fan")
 		return false
 	}
@@ -59,10 +62,8 @@ func (p *Paddle) checkCanMove() bool {
 	return true
 }
 
-func (p *Paddle) move(directionModifier int) {
-	if p.checkCanMove() {
-		p.Y += directionModifier
-	}
+func (p *Paddle) move(directionModifier float64) {
+	p.Y += directionModifier
 }
 
 func (p *Paddle) MoveUp() {
