@@ -52,7 +52,7 @@ func (p *Paddle) Init(playfield ui.Playfield) {
 	}
 }
 
-func (p *Paddle) checkCanMove() bool {
+func (p *Paddle) canMove() bool {
     // Checks all things NOT supposed to happen after moving
     // e.g. going out of screen
 	const TOP_LIMIT = 20
@@ -60,28 +60,36 @@ func (p *Paddle) checkCanMove() bool {
 	fmt.Printf("Tail position: %f\n", p.body.Tail())
 	fmt.Printf("Head position: %f\n", p.body.Head())
 
-	if p.body.Tail() + p.Speed > float64(window.Win.Height - p.Height - 20) {
+	if p.body.Tail() + p.Speed > float64(window.Win.Height - p.Height - 20) || p.body.Head() - p.Speed < TOP_LIMIT {
 		return false
 	}
-
-	if p.body.Head() - p.Speed < TOP_LIMIT {
-		return false
-	}
-
 	return true
 }
 
 func (p *Paddle) move(directionModifier float64) {
-	if p.checkCanMove() {
-		p.Y += directionModifier
-	
-		// Update body
-		for i := 0; i < p.Height; i++ {
-			p.body.Body[i] = p.Y - 1.0
-		}
+	oldYPos := p.Y
+	maxY, minY := 20, window.Win.Height - p.Height - 20
 
-		p.ImgOpts.GeoM.Translate(0, directionModifier)
+	// Bottom
+	if int(p.body.Tail() + p.Speed) >= minY {
+		p.Y = float64(minY) - 3
+
+	// Top
+	} else if int(p.body.Head() - p.Speed) <= maxY {
+		p.Y = float64(maxY) + 3
+
+	// Movement allowed
+	} else {
+		p.Y += directionModifier
 	}
+
+	// Update body
+	for i := 0; i < p.Height; i++ {
+		p.body.Body[i] = p.Y - 1.0
+	}
+
+	// Update paddle on screen
+	p.ImgOpts.GeoM.Translate(0, p.Y - oldYPos)
 }
 
 func (p *Paddle) MoveUp() {
