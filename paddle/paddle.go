@@ -3,8 +3,8 @@ package paddle
 import (
 	"fmt"
 	"gong/window"
+	"gong/UI"
 	"image/color"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -26,40 +26,42 @@ func (body *PaddleBody) Center() int {
 
 type Paddle struct {
     X int
-    Body PaddleBody
+	Y int
+    body PaddleBody
+	playfield ui.Playfield
     Width int
+	Height int
 	Speed int
 	Img *ebiten.Image
 	ImgOpts ebiten.DrawImageOptions
 }
 
-func (p *Paddle) Init() {
-	p.Img = ebiten.NewImage(p.Width, len(p.Body.Body) * 20)
+func (p *Paddle) Init(playfield ui.Playfield) {
+	p.playfield = playfield
+
+	p.Img = ebiten.NewImage(p.Width, p.Height)
 	p.Img.Fill(color.White)
 
-	p.ImgOpts.GeoM.Translate(float64(p.X), float64(p.Body.Head()))
+	p.ImgOpts.GeoM.Translate(float64(p.X), float64(p.Y))
 }
 
 func (p *Paddle) checkCanMove() bool {
     // Checks all things NOT supposed to happen after moving
     // e.g. going out of screen
-	if (p.Body.Head() + p.Speed) > window.Win.Height {
-		fmt.Println("Pää keissi")
+	// topPixel := p.Img.SubImage(image.Rect(p.Width, 1, p.Width, 1))
+	// bottomPixel := p.Img.SubImage(image.Rect(p.Width, p.Height - 1, p.Width, p.Height - 1))
+
+	if float64(p.Y + p.Speed) > float64(window.Win.Height - 20) {
+		fmt.Println("shit hit the fan")
 		return false
 	}
 
-	if (p.Body.Tail() + p.Speed) > window.Win.Height * 2 - 2 {
-		fmt.Println("Tail keissi")
-		return false
-	}
 	return true
 }
 
 func (p *Paddle) move(directionModifier int) {
 	if p.checkCanMove() {
-		for i := 0; i < len(p.Body.Body); i++ {
-			p.Body.Body[i] += directionModifier
-		}
+		p.Y += directionModifier
 	}
 }
 
@@ -71,12 +73,8 @@ func (p *Paddle) MoveDown() {
 	p.move(+p.Speed)
 }
 
-func (p Paddle) Draw(screen *ebiten.Image) {
-	for i := 0; i < len(p.Body.Body); i++ {
-		bodyPartOpts := ebiten.DrawImageOptions{}
-		bodyPartOpts.GeoM.Translate(float64(p.X), float64(p.Body.Body[i]))
-		screen.DrawImage(p.Img, &bodyPartOpts)
-	}
+func (p *Paddle) Draw(screen *ebiten.Image) {
+	screen.DrawImage(p.Img, &p.ImgOpts)
 }
 
 func (p Paddle) Clear(screen *ebiten.Image) {

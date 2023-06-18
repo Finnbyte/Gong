@@ -14,10 +14,11 @@ import (
 )
 
 const (
-	SCREEN_WIDTH = 600
-	SCREEN_HEIGHT = 300
+	WINDOW_WIDTH = 800
+	WINDOW_HEIGHT = 600
 
-	PADDLE_WIDTH = 5
+	PADDLE_WIDTH = 10
+	PADDLE_HEIGHT = 100
 )
 
 // Game implements ebiten.Game interface.
@@ -30,17 +31,16 @@ type Game struct{
 }
 
 func NewGame() *Game {
-	center := window.Win.Height / 2 / 2
+	centeredPaddles := (window.Win.Height / 2) - PADDLE_HEIGHT /2
 
 	game := &Game{ 
 		leftPlayer: player.Player{ 
 			Score: 0, 
 			Paddle: paddle.Paddle{
 				X: 20, 
-				Body: paddle.PaddleBody{
-					Body: [5]int{center-2, center-1, center, center+1, center+2},
-				},
+				Y: centeredPaddles,
 				Width: PADDLE_WIDTH,
+				Height: PADDLE_HEIGHT,
 				Speed: 4,
 			},
 		},
@@ -48,29 +48,28 @@ func NewGame() *Game {
 			Score: 0, 
 			Paddle: paddle.Paddle{
 				X: window.Win.HalfWidth() - 20, 
-				Body: paddle.PaddleBody{
-					Body: [5]int{center-2, center-1, center, center+1, center+2},
-				},
+				Y: centeredPaddles,
 				Width: PADDLE_WIDTH,
+				Height: PADDLE_HEIGHT,
 				Speed: 4,
 			},
 		},
 		ball: ballImport.Ball{
-			Pos: [2]int{center, center},
+			Pos: [2]int{0, 0},
 			Direction: 1,        
 			HasHitPlayer: false,
 		},
 		UI: ui.UI{
 			Separator: ui.Separator{Width: 3, Color: color.White},
-			Playfield: ui.Playfield{ScreenWidth: window.Win.Width, ScreenHeight: window.Win.Height},
+			Playfield: ui.Playfield{Window: window.Win},
 		},
 	}
 
 	// Initializing components
 	game.UI.Separator.Init(window.Win.Width, window.Win.Height)
 	game.UI.Playfield.Init()
-	game.leftPlayer.Paddle.Init()
-	game.rightPlayer.Paddle.Init()
+	game.leftPlayer.Paddle.Init(game.UI.Playfield)
+	game.rightPlayer.Paddle.Init(game.UI.Playfield)
 
 	// Return struct instance for runGame()
 	return game
@@ -123,10 +122,10 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 }
 
 func main() {
-    ebiten.SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT)
+    ebiten.SetWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
     ebiten.SetWindowTitle("Gong - The Go Pong!")
 
-    window.Win = window.Window{ Width: SCREEN_WIDTH * 2, Height: SCREEN_HEIGHT * 2}
+    window.Win = window.Window{ Width: WINDOW_WIDTH, Height: WINDOW_HEIGHT }
 
 	// Start a new game
 	if err := ebiten.RunGame(NewGame()); err != nil {
