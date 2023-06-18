@@ -3,7 +3,7 @@ package main
 import (
 	"gong/UI"
 	"gong/window"
-	ballImport "gong/ball"
+	pongBall "gong/ball"
 	"gong/paddle"
 	"gong/player"
 	"image/color"
@@ -26,7 +26,7 @@ const (
 type Game struct{
 	rightPlayer player.Player
 	leftPlayer player.Player
-	ball ballImport.Ball
+	ball pongBall.Ball
 
 	UI ui.UI
 }
@@ -53,9 +53,10 @@ func NewGame() *Game {
 				Speed: PADDLE_SPEED,
 			},
 		},
-		ball: ballImport.Ball{
-			Pos: [2]int{0, 0},
-			Direction: 1,        
+		ball: pongBall.Ball{
+			Pos: [2]float64{window.Win.CenterX(), window.Win.CenterY()},
+			Width: 30,
+			Height: 30,
 			HasHitPlayer: false,
 		},
 		UI: ui.UI{
@@ -69,6 +70,7 @@ func NewGame() *Game {
 	game.UI.Playfield.Init()
 	game.leftPlayer.Paddle.Init(game.UI.Playfield)
 	game.rightPlayer.Paddle.Init(game.UI.Playfield)
+	game.ball.Init()
 
 	// Return struct instance for runGame()
 	return game
@@ -114,6 +116,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Draw paddles
 	g.leftPlayer.Paddle.Draw(screen)
 	g.rightPlayer.Paddle.Draw(screen)
+
+	// Draw ball
+	g.ball.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
