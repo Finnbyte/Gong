@@ -9,25 +9,25 @@ import (
 )
 
 type PaddleBody struct {
-    Body []float64 // Each element is an y location, and first element represents head
+    body []float64 // Each element is an y location, and first element represents head
+	Mid float64
 }
 
 func (body *PaddleBody) Head() float64 {
-    return body.Body[0]
+    return body.body[0]
 }
 
 func (body *PaddleBody) Tail() float64 {
-    return body.Body[len(body.Body) - 1]
+    return body.body[len(body.body) - 1]
 }
 
 func (body *PaddleBody) Center() float64 {
-    return body.Body[2]
+    return body.body[2]
 }
 
 type Paddle struct {
     X float64
-	Y float64
-    body PaddleBody
+    Body PaddleBody
 	playfield ui.Playfield
     Width int
 	Height int
@@ -37,19 +37,23 @@ type Paddle struct {
 }
 
 func (p *Paddle) Init(playfield ui.Playfield) {
+	// Assign playfield
 	p.playfield = playfield
 
+	// Create and color image representing segment of Paddle
 	p.Img = ebiten.NewImage(p.Width, p.Height)
 	p.Img.Fill(color.White)
 
-	p.Y -= float64(p.Height / 2) // Account for height to center on the Y axis
-	p.ImgOpts.GeoM.Translate(p.X, p.Y)
+	// Account for height to center on the Y axis
+	p.Body.Mid -= float64(p.Height / 2) 
 
-	// Initialize body variable
-	p.body.Body = make([]float64, p.Height)
-	for i := 0; i < p.Height; i++ {
-		p.body.Body[i] = p.Y + 1.0
-	}
+	// Initialize body parts
+	p.Body.body = make([]float64, p.Height)
+	p.Body.body[0] = p.Body.Mid - 1.0
+	p.Body.body[1] = p.Body.Mid - 2.0
+	p.Body.body[2] = p.Body.Mid
+	p.Body.body[3] = p.Body.Mid + 1.0
+	p.Body.body[4] = p.Body.Mid + 2.0
 }
 
 func (p *Paddle) checkCanMove() bool {
@@ -57,14 +61,14 @@ func (p *Paddle) checkCanMove() bool {
     // e.g. going out of screen
 	const TOP_LIMIT = 20
 
-	fmt.Printf("Tail position: %f\n", p.body.Tail())
-	fmt.Printf("Head position: %f\n", p.body.Head())
+	fmt.Printf("Tail position: %f\n", p.Body.Tail())
+	fmt.Printf("Head position: %f\n", p.Body.Head())
 
-	if p.body.Tail() + p.Speed > float64(window.Win.Height - 20) {
+	if p.Body.Tail() + p.Speed > float64(window.Win.Height - 20) {
 		return false
 	}
 
-	if p.body.Head() - p.Speed < TOP_LIMIT {
+	if p.Body.Head() - p.Speed < TOP_LIMIT {
 		return false
 	}
 
@@ -73,14 +77,10 @@ func (p *Paddle) checkCanMove() bool {
 
 func (p *Paddle) move(directionModifier float64) {
 	if p.checkCanMove() {
-		p.Y += directionModifier
-	
 		// Update body
-		for i := 0; i < p.Height; i++ {
-			p.body.Body[i] = p.Y - 1.0
+		for i := 0; i < len(p.Body.body); i++ {
+			p.Body.body[i] += directionModifier
 		}
-
-		p.ImgOpts.GeoM.Translate(0, directionModifier)
 	}
 }
 
@@ -93,8 +93,6 @@ func (p *Paddle) MoveDown() {
 }
 
 func (p *Paddle) Draw(screen *ebiten.Image) {
-	red := color.RGBA{R: 255, G: 0, B: 0, A: 1}
-    p.Img.Set(int(p.X), int(p.body.Tail()), red)
 	screen.DrawImage(p.Img, &p.ImgOpts)
 }
 

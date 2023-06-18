@@ -37,7 +37,9 @@ func NewGame() *Game {
 			Score: 0, 
 			Paddle: paddle.Paddle{
 				X: 20.0, 
-				Y: window.Win.CenterY(),
+				Body: paddle.PaddleBody{
+					Mid: window.Win.CenterY(),
+				},
 				Width: PADDLE_WIDTH,
 				Height: PADDLE_HEIGHT,
 				Speed: PADDLE_SPEED,
@@ -47,7 +49,9 @@ func NewGame() *Game {
 			Score: 0, 
 			Paddle: paddle.Paddle{
 				X: float64(window.Win.Width - 20), 
-				Y: window.Win.CenterY(),
+				Body: paddle.PaddleBody{
+					Mid: window.Win.CenterY(),
+				},
 				Width: PADDLE_WIDTH,
 				Height: PADDLE_HEIGHT,
 				Speed: PADDLE_SPEED,
