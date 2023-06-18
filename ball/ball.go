@@ -16,15 +16,27 @@ type BallPosition struct {
 	X, Y float64
 }
 
+type BallDirection int
+
+func (bd BallDirection) Int() int {
+	return int(bd)
+}
+
 type Ball struct {
 	Width, Height int
 	Speed, InitialSpeed int
 	Pos BallPosition
-	Velocity BallVelocity
+	direction BallDirection
 	HasHitPlayer bool
 	Img *ebiten.Image
 	ImgOpts ebiten.DrawImageOptions
 }
+
+const (
+	UNDEFINED BallDirection = 0
+	LEFT BallDirection = 1
+	RIGHT BallDirection = -1 
+)
 
 func (b *Ball) Init() {
 	b.Img = ebiten.NewImage(b.Width, b.Height)
@@ -40,6 +52,15 @@ func (b *Ball) Init() {
 	b.ImgOpts.GeoM.Translate(window.Win.CenterX(), window.Win.CenterY())
 }
 
+func (b *Ball) SwapDirection() {
+	switch b.direction {
+	case LEFT:
+	    b.direction = RIGHT
+	case RIGHT:
+	    b.direction = LEFT
+	}
+}
+
 func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
 	var currentSpeed int
 
@@ -49,8 +70,17 @@ func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
 		currentSpeed = b.InitialSpeed
 	}
 
+	if b.direction == UNDEFINED {
+		b.direction = LEFT
+	}
+
 	oldPos := BallPosition{ X: b.Pos.X, Y: b.Pos.Y }
-	b.Pos.X += float64(currentSpeed)
+
+	if int(b.Pos.X + float64(currentSpeed)) >= int(rightPaddle.X) || int(b.Pos.X + float64(currentSpeed)) <= int(leftPaddle.X) {
+		b.SwapDirection()
+	}
+
+	b.Pos.X += float64(currentSpeed * b.direction.Int())
 
 	b.ImgOpts.GeoM.Translate(b.Pos.X - oldPos.X, b.Pos.Y - oldPos.Y)
 }
