@@ -42,7 +42,8 @@ func (p *Paddle) Init(playfield ui.Playfield) {
 
 	// Create and color image representing segment of Paddle
 	p.Img = ebiten.NewImage(p.Width, p.Height)
-	p.Img.Fill(color.White)
+	red := color.RGBA{R: 255, G: 0, B: 0, A: 1}
+	p.Img.Fill(red)
 
 	// Account for height to center on the Y axis
 	p.Body.Mid -= float64(p.Height / 2) 
@@ -71,7 +72,6 @@ func (p *Paddle) checkCanMove() bool {
 	if p.Body.Head() - p.Speed < TOP_LIMIT {
 		return false
 	}
-
 	return true
 }
 
@@ -93,7 +93,15 @@ func (p *Paddle) MoveDown() {
 }
 
 func (p *Paddle) Draw(screen *ebiten.Image) {
-	screen.DrawImage(p.Img, &p.ImgOpts)
+	bodyPartOpts := ebiten.DrawImageOptions{}
+	for i := 0; i < len(p.Body.body); i++ {
+		bodyPartOpts.GeoM.Translate(0, float64(p.Body.body[i]))
+	}
+
+	for i := 0; i < len(p.Body.body); i++ {
+		bodyPartOpts.GeoM.Translate(0, float64(p.Body.body[i]))
+	    screen.DrawImage(p.Img, &bodyPartOpts)
+	}
 }
 
 func (p Paddle) Clear(screen *ebiten.Image) {
