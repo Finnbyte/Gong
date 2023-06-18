@@ -14,15 +14,14 @@ import (
 )
 
 const (
-	WINDOW_WIDTH = 800
+	WINDOW_WIDTH = 600
 	WINDOW_HEIGHT = 600
 
 	PADDLE_WIDTH = 10
 	PADDLE_HEIGHT = 100
 	PADDLE_SPEED = 3.0
 
-	BALL_WIDTH = 22 
-	BALL_HEIGHT = BALL_WIDTH 
+	BALL_RADIUS = 22
 	BALL_SPEED = 4 
 	BALL_SPEED_INITIAL = 2
 )
@@ -51,7 +50,7 @@ func NewGame() *Game {
 		rightPlayer: player.Player{ 
 			Score: 0, 
 			Paddle: paddle.Paddle{
-				X: float64(window.Win.Width - 20), 
+				X: float64(window.Win.Width) - 30, 
 				Y: window.Win.CenterY(),
 				Width: PADDLE_WIDTH,
 				Height: PADDLE_HEIGHT,
@@ -60,8 +59,7 @@ func NewGame() *Game {
 		},
 		ball: pongBall.Ball{
 			Pos: pongBall.BallPosition{X: window.Win.CenterX(), Y: window.Win.CenterY()},
-			Width: BALL_WIDTH,
-			Height: BALL_HEIGHT,
+			Radius: BALL_RADIUS,
 			Speed: BALL_SPEED,
 			InitialSpeed: BALL_SPEED_INITIAL,
 			HasHitPlayer: false,

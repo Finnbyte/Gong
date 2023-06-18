@@ -23,7 +23,7 @@ func (bd BallDirection) Int() int {
 }
 
 type Ball struct {
-	Width, Height int
+	Radius int
 	Speed, InitialSpeed int
 	Pos BallPosition
 	direction BallDirection
@@ -39,14 +39,14 @@ const (
 )
 
 func (b *Ball) Init() {
-	b.Img = ebiten.NewImage(b.Width, b.Height)
+	b.Img = ebiten.NewImage(b.Radius, b.Radius)
 
 	pinkColor := color.RGBA{R: 255, B: 203, G: 192, A: 1}
 	b.Img.Fill(pinkColor)
 
 	// Centers, accounting for ball's size
-	b.Pos.X -= float64(b.Width / 2)
-	b.Pos.Y -= float64(b.Height / 2)
+	b.Pos.X -= float64(b.Radius / 2)
+	b.Pos.Y -= float64(b.Radius / 2)
 
 	// Initializes ball to center of window area
 	b.ImgOpts.GeoM.Translate(window.Win.CenterX(), window.Win.CenterY())
@@ -76,7 +76,7 @@ func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
 
 	oldPos := BallPosition{ X: b.Pos.X, Y: b.Pos.Y }
 
-	if int(b.Pos.X + float64(currentSpeed)) >= int(rightPaddle.X) || int(b.Pos.X + float64(currentSpeed)) <= int(leftPaddle.X) {
+	if int(b.Pos.X + float64(currentSpeed)) >= int(rightPaddle.X - float64(rightPaddle.Width*3)) || int(b.Pos.X + float64(currentSpeed)) <= int(leftPaddle.X) {
 		b.SwapDirection()
 	}
 
