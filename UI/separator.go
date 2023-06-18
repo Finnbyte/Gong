@@ -14,7 +14,7 @@ type Separator struct {
 
 
 func (s *Separator) Init(screenWidth, screenHeight int) {
-	s.Img = ebiten.NewImage(s.Width, screenHeight - 70) // - 70 to leave room for top and bottom parts
+	s.Img = ebiten.NewImage(s.Width, screenHeight) // - 70 to leave room for top and bottom parts
 	s.Img.Fill(s.Color)
 
 	imageRect := s.Img.Bounds().Size()

@@ -19,8 +19,8 @@ func (pf *Playfield) Init() {
 
 	// Draw the line across the screen
 	pf.ImgOptsTop = ebiten.DrawImageOptions{}
-	pf.ImgOptsTop.GeoM.Translate(0, 20)
+	pf.ImgOptsTop.GeoM.Translate(0, 0)
 
 	pf.ImgOptsBottom = ebiten.DrawImageOptions{}
-	pf.ImgOptsBottom.GeoM.Translate(0, float64(window.Win.Height - 20))
+	pf.ImgOptsBottom.GeoM.Translate(0, float64(window.Win.Height - 10))
 }
