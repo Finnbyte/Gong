@@ -60,7 +60,7 @@ func (p *Paddle) checkCanMove() bool {
 	fmt.Printf("Tail position: %f\n", p.body.Tail())
 	fmt.Printf("Head position: %f\n", p.body.Head())
 
-	if p.body.Tail() + p.Speed > float64(window.Win.Height - 20) {
+	if p.body.Tail() + p.Speed > float64(window.Win.Height - p.Height - 20) {
 		return false
 	}
 
