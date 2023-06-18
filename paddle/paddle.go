@@ -69,14 +69,15 @@ func (p *Paddle) canMove() bool {
 func (p *Paddle) move(directionModifier float64) {
 	oldYPos := p.Y
 	maxY, minY := 20, window.Win.Height - p.Height - 20
+	boundaryCollisionPush := p.Speed * 2
 
 	// Bottom
 	if int(p.body.Tail() + p.Speed) >= minY {
-		p.Y = float64(minY) - 3
+		p.Y = float64(minY) + -boundaryCollisionPush 
 
 	// Top
 	} else if int(p.body.Head() - p.Speed) <= maxY {
-		p.Y = float64(maxY) + 3
+		p.Y = float64(maxY) + boundaryCollisionPush 
 
 	// Movement allowed
 	} else {
