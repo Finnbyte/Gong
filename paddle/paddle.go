@@ -9,18 +9,18 @@ import (
 )
 
 type PaddleBody struct {
-    Body [5]int // Each element is an y location, and first element represents head
+    Body []float64 // Each element is an y location, and first element represents head
 }
 
-func (body *PaddleBody) Head() int {
+func (body *PaddleBody) Head() float64 {
     return body.Body[0]
 }
 
-func (body *PaddleBody) Tail() int {
+func (body *PaddleBody) Tail() float64 {
     return body.Body[len(body.Body) - 1]
 }
 
-func (body *PaddleBody) Center() int {
+func (body *PaddleBody) Center() float64 {
     return body.Body[2]
 }
 
@@ -44,23 +44,27 @@ func (p *Paddle) Init(playfield ui.Playfield) {
 
 	p.Y -= float64(p.Height / 2) // Account for height to center on the Y axis
 	p.ImgOpts.GeoM.Translate(p.X, p.Y)
+
+	// Initialize body variable
+	p.body.Body = make([]float64, p.Height)
+	for i := 0; i < p.Height; i++ {
+		p.body.Body[i] = p.Y + 1.0
+	}
 }
 
 func (p *Paddle) checkCanMove() bool {
     // Checks all things NOT supposed to happen after moving
     // e.g. going out of screen
-	// topPixel := p.Img.SubImage(image.Rect(p.Width, 1, p.Width, 1))
-	// bottomPixel := p.Img.SubImage(image.Rect(p.Width, p.Height - 1, p.Width, p.Height - 1))
-	
 	const TOP_LIMIT = 20
 
-	fmt.Printf("Position above head: %f\n", p.Y - p.Speed)
+	fmt.Printf("Tail position: %f\n", p.body.Tail())
+	fmt.Printf("Head position: %f\n", p.body.Head())
 
-	if p.Y + (p.Speed * 2) > float64(window.Win.Height - 20) {
+	if p.body.Tail() + p.Speed > float64(window.Win.Height - 20) {
 		return false
 	}
 
-	if p.Y - (p.Speed * 2) < TOP_LIMIT {
+	if p.body.Head() - p.Speed < TOP_LIMIT {
 		return false
 	}
 
@@ -70,6 +74,12 @@ func (p *Paddle) checkCanMove() bool {
 func (p *Paddle) move(directionModifier float64) {
 	if p.checkCanMove() {
 		p.Y += directionModifier
+	
+		// Update body
+		for i := 0; i < p.Height; i++ {
+			p.body.Body[i] = p.Y - 1.0
+		}
+
 		p.ImgOpts.GeoM.Translate(0, directionModifier)
 	}
 }
@@ -83,6 +93,8 @@ func (p *Paddle) MoveDown() {
 }
 
 func (p *Paddle) Draw(screen *ebiten.Image) {
+	red := color.RGBA{R: 255, G: 0, B: 0, A: 1}
+    p.Img.Set(int(p.X), int(p.body.Tail()), red)
 	screen.DrawImage(p.Img, &p.ImgOpts)
 }
 
