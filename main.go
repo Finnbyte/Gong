@@ -19,7 +19,7 @@ const (
 
 	PADDLE_WIDTH = 10
 	PADDLE_HEIGHT = 100
-	PADDLE_SPEED = 2.0
+	PADDLE_SPEED = 3.0
 )
 
 // Game implements ebiten.Game interface.
