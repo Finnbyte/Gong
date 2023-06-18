@@ -20,6 +20,11 @@ const (
 	PADDLE_WIDTH = 10
 	PADDLE_HEIGHT = 100
 	PADDLE_SPEED = 3.0
+
+	BALL_WIDTH = 22 
+	BALL_HEIGHT = BALL_WIDTH 
+	BALL_SPEED = 4 
+	BALL_SPEED_INITIAL = 2
 )
 
 // Game implements ebiten.Game interface.
@@ -54,9 +59,11 @@ func NewGame() *Game {
 			},
 		},
 		ball: pongBall.Ball{
-			Pos: [2]float64{window.Win.CenterX(), window.Win.CenterY()},
-			Width: 30,
-			Height: 30,
+			Pos: pongBall.BallPosition{X: window.Win.CenterX(), Y: window.Win.CenterY()},
+			Width: BALL_WIDTH,
+			Height: BALL_HEIGHT,
+			Speed: BALL_SPEED,
+			InitialSpeed: BALL_SPEED_INITIAL,
 			HasHitPlayer: false,
 		},
 		UI: ui.UI{
@@ -99,6 +106,8 @@ func (g *Game) Update() error {
 	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
 		g.rightPlayer.Paddle.MoveDown()
 	}
+
+	g.ball.Update(g.rightPlayer.Paddle, g.leftPlayer.Paddle)
 
     return nil
 }
