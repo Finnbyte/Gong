@@ -51,11 +51,16 @@ func (p *Paddle) checkCanMove() bool {
     // e.g. going out of screen
 	// topPixel := p.Img.SubImage(image.Rect(p.Width, 1, p.Width, 1))
 	// bottomPixel := p.Img.SubImage(image.Rect(p.Width, p.Height - 1, p.Width, p.Height - 1))
+	
+	const TOP_LIMIT = 20
 
 	fmt.Printf("Position above head: %f\n", p.Y - p.Speed)
 
-	if p.Y + p.Speed > float64(window.Win.Height - 20) {
-		fmt.Println("shit hit the fan")
+	if p.Y + (p.Speed * 2) > float64(window.Win.Height - 20) {
+		return false
+	}
+
+	if p.Y - (p.Speed * 2) < TOP_LIMIT {
 		return false
 	}
 
@@ -63,7 +68,10 @@ func (p *Paddle) checkCanMove() bool {
 }
 
 func (p *Paddle) move(directionModifier float64) {
-	p.Y += directionModifier
+	if p.checkCanMove() {
+		p.Y += directionModifier
+		p.ImgOpts.GeoM.Translate(0, directionModifier)
+	}
 }
 
 func (p *Paddle) MoveUp() {

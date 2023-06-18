@@ -112,8 +112,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(g.UI.Playfield.Img, &g.UI.Playfield.ImgOptsBottom)
 
 	// Draw paddles
-	screen.DrawImage(g.rightPlayer.Paddle.Img, &g.rightPlayer.Paddle.ImgOpts)
-	screen.DrawImage(g.leftPlayer.Paddle.Img, &g.leftPlayer.Paddle.ImgOpts)
+	g.leftPlayer.Paddle.Draw(screen)
+	g.rightPlayer.Paddle.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
