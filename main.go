@@ -116,7 +116,7 @@ func (g *Game) Update() error {
 		g.rightPlayer.Paddle.MoveDown()
 	}
 
-	g.ball.Update(g.rightPlayer.Paddle, g.leftPlayer.Paddle)
+	g.ball.Update(&g.rightPlayer.Paddle, &g.leftPlayer.Paddle, &g.rightPlayer, &g.leftPlayer)
 
     return nil
 }

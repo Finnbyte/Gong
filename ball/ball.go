@@ -3,10 +3,9 @@ package ball
 import (
 	"fmt"
 	"gong/paddle"
+	"gong/player"
 	"gong/window"
 	"image/color"
-	"time"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -100,7 +99,7 @@ func (b *Ball) CollidedWith(paddle paddle.Paddle, currentSpeed int) bool {
 	return false
 }
 
-func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
+func (b *Ball) Update(rightPaddle, leftPaddle *paddle.Paddle, rightPlayer, leftPlayer *player.Player) {
 	var currentSpeed int
 	var yAxisNormalizer int
 
@@ -115,26 +114,32 @@ func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
 	oldPos := BallPosition{ X: b.Pos.X, Y: b.Pos.Y }
 
 	// Check playfield collision
-	if b.Pos.Y + float64(currentSpeed) >= float64(window.Win.HalfHeight()) || b.Pos.Y - float64(currentSpeed) <= 0 {
+	if b.Pos.Y + float64(b.Radius) >= float64(window.Win.Height) || b.Pos.Y - float64(currentSpeed) <= 0 {
 		fmt.Println("touched border")
 		b.SwapDirection(&b.yDirection)
 	}
 
 	// Check paddles collision
-	if b.CollidedWith(leftPaddle, currentSpeed) || b.CollidedWith(rightPaddle, currentSpeed) {
-			b.HasHitPlayer = true
-			currentSpeed = b.Speed
-			b.SwapDirection(&b.xDirection)
+	if b.CollidedWith(*leftPaddle, currentSpeed) || b.CollidedWith(*rightPaddle, currentSpeed) {
+		b.HasHitPlayer = true
+		currentSpeed = b.Speed
+		b.SwapDirection(&b.xDirection)
+	}
 
-	// Ball went in
-	} else if b.Pos.X - float64(b.Radius) > float64(window.Win.Width) || b.Pos.X + float64(b.Radius) <= 0 {
-		fmt.Println("went in")
+
+	// Ball went in for right player
+	if b.Pos.X - float64(b.Radius) > float64(window.Win.Width) {
+		// Set score
+		rightPlayer.Score += 1
+		// Reset ball to initial pos
 		b.Reset()
 
+	// Ball went in for left player
+	} else if b.Pos.X + float64(b.Radius) <= 0 {
 		// Set score
-		
-		// Sleep for 2 seconds
-		time.Sleep(2 * time.Second)
+		leftPlayer.Score += 1
+		// Reset ball to initial pos
+		b.Reset()
 	}
 
 	b.Pos.X += float64(currentSpeed * b.xDirection.Int())
