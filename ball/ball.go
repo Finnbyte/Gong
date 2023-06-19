@@ -34,8 +34,8 @@ type Ball struct {
 
 const (
 	UNDEFINED BallDirection = 0
-	LEFT BallDirection = 1
-	RIGHT BallDirection = -1 
+	LEFT BallDirection = -1
+	RIGHT BallDirection = 1 
 )
 
 func (b *Ball) Init(color color.Color) {
@@ -46,6 +46,9 @@ func (b *Ball) Init(color color.Color) {
 	// Centers, accounting for ball's size
 	b.Pos.X -= float64(b.Radius / 2)
 	b.Pos.Y -= float64(b.Radius / 2)
+
+	// Sets initial direction of ball
+	b.direction = RIGHT
 
 	// Initializes ball to center of window area
 	b.ImgOpts.GeoM.Translate(window.Win.CenterX(), window.Win.CenterY())
@@ -67,10 +70,6 @@ func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
 		currentSpeed = b.Speed
 	} else {
 		currentSpeed = b.InitialSpeed
-	}
-
-	if b.direction == UNDEFINED {
-		b.direction = LEFT
 	}
 
 	oldPos := BallPosition{ X: b.Pos.X, Y: b.Pos.Y }
