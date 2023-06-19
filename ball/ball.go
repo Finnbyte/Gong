@@ -38,11 +38,10 @@ const (
 	RIGHT BallDirection = -1 
 )
 
-func (b *Ball) Init() {
+func (b *Ball) Init(color color.Color) {
 	b.Img = ebiten.NewImage(b.Radius, b.Radius)
 
-	pinkColor := color.RGBA{R: 255, B: 203, G: 192, A: 1}
-	b.Img.Fill(pinkColor)
+	b.Img.Fill(color)
 
 	// Centers, accounting for ball's size
 	b.Pos.X -= float64(b.Radius / 2)
@@ -77,6 +76,10 @@ func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
 	oldPos := BallPosition{ X: b.Pos.X, Y: b.Pos.Y }
 
 	if int(b.Pos.X + float64(currentSpeed)) >= int(rightPaddle.X - float64(rightPaddle.Width*3)) || int(b.Pos.X + float64(currentSpeed)) <= int(leftPaddle.X) {
+		if !b.HasHitPlayer {
+			b.HasHitPlayer = true
+			currentSpeed = b.Speed
+		}
 		b.SwapDirection()
 	}
 
