@@ -17,10 +17,21 @@ type BallPosition struct {
 	X, Y float64
 }
 
-type BallDirection int
+type BallDirection string
 
 func (bd BallDirection) Int() int {
-	return int(bd)
+	switch bd {
+	case "LEFT":
+		return -1
+	case "RIGHT":
+		return 1
+	case "UP":
+		return -1
+	case "DOWN":
+		return 1
+	default: 
+		return 0
+	}
 }
 
 type Ball struct {
@@ -35,11 +46,11 @@ type Ball struct {
 }
 
 const (
-	UNDEFINED BallDirection = 0
-	LEFT BallDirection = -1
-	RIGHT BallDirection = 1 
-	UP BallDirection = -1
-	DOWN BallDirection = 1
+	UNDEFINED BallDirection = "UNDEFINED"
+	LEFT BallDirection = "LEFT"
+	RIGHT BallDirection = "RIGHT"
+	UP BallDirection = "UP" 
+	DOWN BallDirection = "DOWN" 
 )
 
 func (b *Ball) Init(color color.Color) {
@@ -52,8 +63,8 @@ func (b *Ball) Init(color color.Color) {
 	b.Pos.Y -= float64(b.Radius / 2)
 
 	// Sets initial direction of ball
-	b.xDirection = UNDEFINED
-	b.yDirection = UP
+	b.xDirection = RIGHT
+	b.yDirection = DOWN
 
 	// Initializes ball to center of window area
 	b.ImgOpts.GeoM.Translate(window.Win.CenterX(), window.Win.CenterY())
@@ -65,15 +76,23 @@ func (b *Ball) SwapDirection(direction *BallDirection) {
 	    *direction = RIGHT
 	case RIGHT:
 	    *direction = LEFT
+	case UP:
+	    *direction = DOWN
+	case DOWN:
+	    *direction = LEFT
 	}
 }
 
 func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
 	var currentSpeed int
+	var yAxisNormalizer int
+
 	if b.HasHitPlayer {
 		currentSpeed = b.Speed
+		yAxisNormalizer = 0
 	} else {
 		currentSpeed = b.InitialSpeed
+		yAxisNormalizer = 3 // 3 is a good value for smoothing it's vertical ascend
 	}
 
 	oldPos := BallPosition{ X: b.Pos.X, Y: b.Pos.Y }
@@ -92,7 +111,7 @@ func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
 	}
 
 	b.Pos.X += float64(currentSpeed * b.xDirection.Int())
-	b.Pos.Y += float64(currentSpeed * b.yDirection.Int())
+	b.Pos.Y += float64(currentSpeed * b.yDirection.Int()) - float64(yAxisNormalizer) 
 
 	b.ImgOpts.GeoM.Translate(b.Pos.X - oldPos.X, b.Pos.Y - oldPos.Y)
 }
