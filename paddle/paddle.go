@@ -35,11 +35,11 @@ type Paddle struct {
 	ImgOpts ebiten.DrawImageOptions
 }
 
-func (p *Paddle) Init(playfield ui.Playfield) {
+func (p *Paddle) Init(playfield ui.Playfield, color color.Color) {
 	p.playfield = playfield
 
 	p.Img = ebiten.NewImage(p.Width, p.Height)
-	p.Img.Fill(color.White)
+	p.Img.Fill(color)
 
 	p.Y -= float64(p.Height / 2) // Account for height to center on the Y axis
 	p.ImgOpts.GeoM.Translate(p.X, p.Y)

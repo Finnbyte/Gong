@@ -13,9 +13,9 @@ type Playfield struct {
     ImgOptsBottom ebiten.DrawImageOptions
 }
 
-func (pf *Playfield) Init() {
+func (pf *Playfield) Init(color color.Color) {
     pf.Img = ebiten.NewImage(window.Win.Width, 10)
-	pf.Img.Fill(color.White)
+	pf.Img.Fill(color)
 
 	// Draw the line across the screen
 	pf.ImgOptsTop = ebiten.DrawImageOptions{}
