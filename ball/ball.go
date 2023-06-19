@@ -5,6 +5,7 @@ import (
 	"gong/paddle"
 	"gong/window"
 	"image/color"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -83,6 +84,22 @@ func (b *Ball) SwapDirection(direction *BallDirection) {
 	}
 }
 
+func (b *Ball) Reset() {
+	b.Pos.X, b.Pos.Y = window.Win.CenterX(), window.Win.CenterY() - 100
+	b.Pos.X -= float64(b.Radius / 2)
+	b.Pos.Y -= float64(b.Radius / 2)
+	b.HasHitPlayer = false
+	b.SwapDirection(&b.xDirection)
+	b.yDirection = DOWN
+}
+
+func (b *Ball) CollidedWith(paddle paddle.Paddle, currentSpeed int) bool {
+	if b.Pos.Y > paddle.Y - float64(paddle.Height/2) && b.Pos.Y < paddle.Y + float64(paddle.Height/2) && int(b.Pos.X + float64(currentSpeed)) <= int(paddle.X) {
+		return true
+	}
+	return false
+}
+
 func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
 	var currentSpeed int
 	var yAxisNormalizer int
@@ -98,16 +115,26 @@ func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
 	oldPos := BallPosition{ X: b.Pos.X, Y: b.Pos.Y }
 
 	// Check playfield collision
-	if b.Pos.Y + float64(b.Radius * 2) >= float64(window.Win.Height) || b.Pos.Y - float64(currentSpeed) <= 0 {
+	if b.Pos.Y + float64(currentSpeed) >= float64(window.Win.HalfHeight()) || b.Pos.Y - float64(currentSpeed) <= 0 {
 		fmt.Println("touched border")
 		b.SwapDirection(&b.yDirection)
 	}
 
-	// Check paddles collision (X only for now)
-	if int(b.Pos.X + float64(currentSpeed)) >= int(rightPaddle.X - float64(rightPaddle.Width*3)) || int(b.Pos.X + float64(currentSpeed)) <= int(leftPaddle.X) {
-		b.HasHitPlayer = true
-		currentSpeed = b.Speed
-		b.SwapDirection(&b.xDirection)
+	// Check paddles collision
+	if b.CollidedWith(leftPaddle, currentSpeed) || b.CollidedWith(rightPaddle, currentSpeed) {
+			b.HasHitPlayer = true
+			currentSpeed = b.Speed
+			b.SwapDirection(&b.xDirection)
+
+	// Ball went in
+	} else if b.Pos.X - float64(b.Radius) > float64(window.Win.Width) || b.Pos.X + float64(b.Radius) <= 0 {
+		fmt.Println("went in")
+		b.Reset()
+
+		// Set score
+		
+		// Sleep for 2 seconds
+		time.Sleep(2 * time.Second)
 	}
 
 	b.Pos.X += float64(currentSpeed * b.xDirection.Int())
