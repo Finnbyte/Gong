@@ -52,8 +52,8 @@ func (b *Ball) Init(color color.Color) {
 	b.Pos.Y -= float64(b.Radius / 2)
 
 	// Sets initial direction of ball
-	b.xDirection = RIGHT
-	b.yDirection = UNDEFINED
+	b.xDirection = UNDEFINED
+	b.yDirection = UP
 
 	// Initializes ball to center of window area
 	b.ImgOpts.GeoM.Translate(window.Win.CenterX(), window.Win.CenterY())
@@ -79,8 +79,9 @@ func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
 	oldPos := BallPosition{ X: b.Pos.X, Y: b.Pos.Y }
 
 	// Check playfield collision
-	if b.Pos.Y - float64(b.Radius) >= float64(window.Win.Height) || b.Pos.Y - float64(b.Radius) <= 1 {
+	if b.Pos.Y + float64(b.Radius * 2) >= float64(window.Win.Height) || b.Pos.Y - float64(currentSpeed) <= 0 {
 		fmt.Println("touched border")
+		b.SwapDirection(&b.yDirection)
 	}
 
 	// Check paddles collision (X only for now)
