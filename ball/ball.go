@@ -1,6 +1,7 @@
 package ball
 
 import (
+	"fmt"
 	"gong/paddle"
 	"gong/window"
 	"image/color"
@@ -26,7 +27,8 @@ type Ball struct {
 	Radius int
 	Speed, InitialSpeed int
 	Pos BallPosition
-	direction BallDirection
+	xDirection BallDirection
+	yDirection BallDirection
 	HasHitPlayer bool
 	Img *ebiten.Image
 	ImgOpts ebiten.DrawImageOptions
@@ -36,6 +38,8 @@ const (
 	UNDEFINED BallDirection = 0
 	LEFT BallDirection = -1
 	RIGHT BallDirection = 1 
+	UP BallDirection = -1
+	DOWN BallDirection = 1
 )
 
 func (b *Ball) Init(color color.Color) {
@@ -48,24 +52,24 @@ func (b *Ball) Init(color color.Color) {
 	b.Pos.Y -= float64(b.Radius / 2)
 
 	// Sets initial direction of ball
-	b.direction = RIGHT
+	b.xDirection = RIGHT
+	b.yDirection = UNDEFINED
 
 	// Initializes ball to center of window area
 	b.ImgOpts.GeoM.Translate(window.Win.CenterX(), window.Win.CenterY())
 }
 
-func (b *Ball) SwapDirection() {
-	switch b.direction {
+func (b *Ball) SwapDirection(direction *BallDirection) {
+	switch *direction {
 	case LEFT:
-	    b.direction = RIGHT
+	    *direction = RIGHT
 	case RIGHT:
-	    b.direction = LEFT
+	    *direction = LEFT
 	}
 }
 
 func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
 	var currentSpeed int
-
 	if b.HasHitPlayer {
 		currentSpeed = b.Speed
 	} else {
@@ -74,15 +78,20 @@ func (b *Ball) Update(rightPaddle, leftPaddle paddle.Paddle) {
 
 	oldPos := BallPosition{ X: b.Pos.X, Y: b.Pos.Y }
 
-	if int(b.Pos.X + float64(currentSpeed)) >= int(rightPaddle.X - float64(rightPaddle.Width*3)) || int(b.Pos.X + float64(currentSpeed)) <= int(leftPaddle.X) {
-		if !b.HasHitPlayer {
-			b.HasHitPlayer = true
-			currentSpeed = b.Speed
-		}
-		b.SwapDirection()
+	// Check playfield collision
+	if b.Pos.Y - float64(b.Radius) >= float64(window.Win.Height) || b.Pos.Y - float64(b.Radius) <= 1 {
+		fmt.Println("touched border")
 	}
 
-	b.Pos.X += float64(currentSpeed * b.direction.Int())
+	// Check paddles collision (X only for now)
+	if int(b.Pos.X + float64(currentSpeed)) >= int(rightPaddle.X - float64(rightPaddle.Width*3)) || int(b.Pos.X + float64(currentSpeed)) <= int(leftPaddle.X) {
+		b.HasHitPlayer = true
+		currentSpeed = b.Speed
+		b.SwapDirection(&b.xDirection)
+	}
+
+	b.Pos.X += float64(currentSpeed * b.xDirection.Int())
+	b.Pos.Y += float64(currentSpeed * b.yDirection.Int())
 
 	b.ImgOpts.GeoM.Translate(b.Pos.X - oldPos.X, b.Pos.Y - oldPos.Y)
 }
