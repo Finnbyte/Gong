@@ -66,7 +66,7 @@ func (b *Ball) Init(color color.Color) {
 
 	// Sets initial direction of ball
 	b.xDirection = RIGHT
-	b.yDirection = UNDEFINED
+	b.yDirection = DOWN
 
 	// Initializes ball to center of window area
 	b.ImgOpts.GeoM.Translate(window.Win.CenterX(), window.Win.CenterY())
@@ -88,10 +88,12 @@ func (b *Ball) SwapDirection(direction *BallDirection) {
 func (b *Ball) Reset() {
 	// Reset positions
 	b.Pos.X, b.Pos.Y = window.Win.CenterX(), window.Win.CenterY() - 100
-	b.Pos.X -= float64(b.Radius / 2)
-	b.Pos.Y -= float64(b.Radius / 2)
+	//b.Pos.X -= float64(b.Radius / 2)
+	//b.Pos.Y -= float64(b.Radius / 2)
+
 	// Reset variable
 	b.HasHitPlayer = false
+
 	// Sets direction
 	b.SwapDirection(&b.xDirection)
 	b.yDirection = UNDEFINED
@@ -107,24 +109,17 @@ func (b *Ball) CollidedWith(paddle paddle.Paddle, currentSpeed int) bool {
 
 func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.Paddle, rightPlayer, leftPlayer *player.Player) {
 	var currentSpeed int
-	var yAxisNormalizer int
+	var yAxisNormalizer float64
 
 	if b.HasHitPlayer {
 		currentSpeed = b.Speed
 		yAxisNormalizer = 0
 	} else {
 		currentSpeed = b.InitialSpeed
-		yAxisNormalizer = 3 // 3 is a good value for smoothing it's vertical ascend
-		fmt.Println(yAxisNormalizer)
+		yAxisNormalizer = -1.5 // Causes ball to go down slowly
 	}
 
 	oldPos := BallPosition{ X: b.Pos.X, Y: b.Pos.Y }
-
-	// Check playfield collision
-	// if b.Pos.Y - float64(b.Radius * 2) >= float64(0 + playfield.Height) || b.Pos.Y + float64(currentSpeed) <= 0 + float64(window.Win.Height) {
-	// 	fmt.Println("touched border")
-	// 	b.SwapDirection(&b.yDirection)
-	// }
 
 	// Check paddles collision
 	fmt.Println(b.Pos.X, rightPaddle.X)
@@ -137,14 +132,14 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 	}
 
 	// Ball went in for right player
-	if b.Pos.X - float64(b.Radius) > float64(window.Win.Width) {
+	if b.Pos.X > float64(window.Win.Width) {
 		// Set score
 		rightPlayer.Score += 1
 		// Reset ball
 		b.Reset()
 
 	// Ball went in for left player
-	} else if b.Pos.X + float64(b.Radius) <= 0 {
+	} else if b.Pos.X <= 0 {
 		// Set score
 		leftPlayer.Score += 1
 		// Reset ball
@@ -152,7 +147,7 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 	}
 
 	b.Pos.X += float64(currentSpeed * b.xDirection.Int())
-	b.Pos.Y += float64(currentSpeed * b.yDirection.Int())
+	b.Pos.Y += float64(currentSpeed * b.yDirection.Int()) + float64(yAxisNormalizer)
 
 	b.ImgOpts.GeoM.Translate(b.Pos.X - oldPos.X, b.Pos.Y - oldPos.Y)
 }
