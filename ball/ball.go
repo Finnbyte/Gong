@@ -2,6 +2,7 @@ package ball
 
 import (
 	"fmt"
+	ui "gong/UI"
 	"gong/paddle"
 	"gong/player"
 	"gong/window"
@@ -59,12 +60,13 @@ func (b *Ball) Init(color color.Color) {
 	b.Img.Fill(color)
 
 	// Centers, accounting for ball's size
-	b.Pos.X -= float64(b.Radius / 2)
-	b.Pos.Y -= float64(b.Radius / 2)
+	// DISABLED for now, makes calculating positions relative to paddles, etc. hard
+	// b.Pos.X -= float64(b.Radius)
+	// b.Pos.Y -= float64(b.Radius)
 
 	// Sets initial direction of ball
 	b.xDirection = RIGHT
-	b.yDirection = DOWN
+	b.yDirection = UNDEFINED
 
 	// Initializes ball to center of window area
 	b.ImgOpts.GeoM.Translate(window.Win.CenterX(), window.Win.CenterY())
@@ -79,27 +81,31 @@ func (b *Ball) SwapDirection(direction *BallDirection) {
 	case UP:
 	    *direction = DOWN
 	case DOWN:
-	    *direction = LEFT
+	    *direction = UP
 	}
 }
 
 func (b *Ball) Reset() {
+	// Reset positions
 	b.Pos.X, b.Pos.Y = window.Win.CenterX(), window.Win.CenterY() - 100
 	b.Pos.X -= float64(b.Radius / 2)
 	b.Pos.Y -= float64(b.Radius / 2)
+	// Reset variable
 	b.HasHitPlayer = false
+	// Sets direction
 	b.SwapDirection(&b.xDirection)
-	b.yDirection = DOWN
+	b.yDirection = UNDEFINED
 }
 
 func (b *Ball) CollidedWith(paddle paddle.Paddle, currentSpeed int) bool {
-	if b.Pos.Y > paddle.Y - float64(paddle.Height/2) && b.Pos.Y < paddle.Y + float64(paddle.Height/2) && int(b.Pos.X + float64(currentSpeed)) <= int(paddle.X) {
-		return true
+	if  b.Pos.X + float64(currentSpeed) >= paddle.X {
+			fmt.Println("y werk")
+			return true
 	}
 	return false
 }
 
-func (b *Ball) Update(rightPaddle, leftPaddle *paddle.Paddle, rightPlayer, leftPlayer *player.Player) {
+func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.Paddle, rightPlayer, leftPlayer *player.Player) {
 	var currentSpeed int
 	var yAxisNormalizer int
 
@@ -109,41 +115,44 @@ func (b *Ball) Update(rightPaddle, leftPaddle *paddle.Paddle, rightPlayer, leftP
 	} else {
 		currentSpeed = b.InitialSpeed
 		yAxisNormalizer = 3 // 3 is a good value for smoothing it's vertical ascend
+		fmt.Println(yAxisNormalizer)
 	}
 
 	oldPos := BallPosition{ X: b.Pos.X, Y: b.Pos.Y }
 
 	// Check playfield collision
-	if b.Pos.Y + float64(b.Radius) >= float64(window.Win.Height) || b.Pos.Y - float64(currentSpeed) <= 0 {
-		fmt.Println("touched border")
-		b.SwapDirection(&b.yDirection)
-	}
+	// if b.Pos.Y - float64(b.Radius * 2) >= float64(0 + playfield.Height) || b.Pos.Y + float64(currentSpeed) <= 0 + float64(window.Win.Height) {
+	// 	fmt.Println("touched border")
+	// 	b.SwapDirection(&b.yDirection)
+	// }
 
 	// Check paddles collision
-	if b.CollidedWith(*leftPaddle, currentSpeed) || b.CollidedWith(*rightPaddle, currentSpeed) {
-		b.HasHitPlayer = true
-		currentSpeed = b.Speed
+	fmt.Println(b.Pos.X, rightPaddle.X)
+	if b.Pos.X + float64(rightPaddle.Width) >= rightPaddle.X || b.Pos.X <= leftPaddle.X {
+		if !b.HasHitPlayer {
+			b.HasHitPlayer = true
+			currentSpeed = b.Speed
+		}
 		b.SwapDirection(&b.xDirection)
 	}
-
 
 	// Ball went in for right player
 	if b.Pos.X - float64(b.Radius) > float64(window.Win.Width) {
 		// Set score
 		rightPlayer.Score += 1
-		// Reset ball to initial pos
+		// Reset ball
 		b.Reset()
 
 	// Ball went in for left player
 	} else if b.Pos.X + float64(b.Radius) <= 0 {
 		// Set score
 		leftPlayer.Score += 1
-		// Reset ball to initial pos
+		// Reset ball
 		b.Reset()
 	}
 
 	b.Pos.X += float64(currentSpeed * b.xDirection.Int())
-	b.Pos.Y += float64(currentSpeed * b.yDirection.Int()) - float64(yAxisNormalizer) 
+	b.Pos.Y += float64(currentSpeed * b.yDirection.Int())
 
 	b.ImgOpts.GeoM.Translate(b.Pos.X - oldPos.X, b.Pos.Y - oldPos.Y)
 }
