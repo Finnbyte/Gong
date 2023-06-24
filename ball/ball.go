@@ -87,7 +87,7 @@ func (b *Ball) SwapDirection(direction *BallDirection) {
 
 func (b *Ball) Reset() {
 	// Reset positions
-	b.Pos.X, b.Pos.Y = window.Win.CenterX(), window.Win.CenterY() - 100
+	b.Pos.X, b.Pos.Y = window.Win.CenterX(), window.Win.CenterY()
 	//b.Pos.X -= float64(b.Radius / 2)
 	//b.Pos.Y -= float64(b.Radius / 2)
 
@@ -96,15 +96,7 @@ func (b *Ball) Reset() {
 
 	// Sets direction
 	b.SwapDirection(&b.xDirection)
-	b.yDirection = UNDEFINED
-}
-
-func (b *Ball) CollidedWith(paddle paddle.Paddle, currentSpeed int) bool {
-	if  b.Pos.X + float64(currentSpeed) >= paddle.X {
-			fmt.Println("y werk")
-			return true
-	}
-	return false
+	b.yDirection = DOWN
 }
 
 func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.Paddle, rightPlayer, leftPlayer *player.Player) {
@@ -129,7 +121,13 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 	// Check paddles collision
 	fmt.Println(b.Pos.X, rightPaddle.X)
 	fmt.Println(b.Pos.Y, rightPaddle.X)
-	if b.Pos.X + float64(rightPaddle.Width) >= rightPaddle.X || b.Pos.X <= leftPaddle.X {
+	if b.Pos.X >= rightPaddle.X &&
+	   b.Pos.Y <= rightPaddle.Y + float64(rightPaddle.Height/2) &&
+	   b.Pos.Y >= rightPaddle.Y || 
+
+	   b.Pos.X <= leftPaddle.X && 
+	   b.Pos.Y <= leftPaddle.Y + float64(leftPaddle.Height/2) &&
+	   b.Pos.Y >= leftPaddle.Y {
 		if !b.HasHitPlayer {
 			b.HasHitPlayer = true
 			currentSpeed = b.Speed
