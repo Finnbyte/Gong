@@ -42,6 +42,7 @@ type Ball struct {
 	Pos BallPosition
 	xDirection BallDirection
 	yDirection BallDirection
+	verticality float64
 	HasHitPlayer bool
 	Img *ebiten.Image
 	ImgOpts ebiten.DrawImageOptions
@@ -68,6 +69,8 @@ func (b *Ball) Init(color color.Color) {
 	// Sets initial direction of ball
 	b.xDirection = RIGHT
 	b.yDirection = DOWN
+
+	b.verticality = -1.5
 
 	// Initializes ball to center of window area
 	b.ImgOpts.GeoM.Translate(window.Win.CenterX(), window.Win.CenterY())
@@ -98,6 +101,8 @@ func (b *Ball) Reset() {
 	// Sets direction
 	b.SwapDirection(&b.xDirection)
 	b.yDirection = DOWN
+
+	b.verticality = -1.5
 }
 
 func (b *Ball) determineDirectionOnPaddleCollision(paddle paddle.Paddle) {
@@ -112,14 +117,11 @@ func (b *Ball) determineDirectionOnPaddleCollision(paddle paddle.Paddle) {
 
 func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.Paddle, rightPlayer, leftPlayer *player.Player) {
 	var currentSpeed int
-	var yAxisNormalizer float64
 
 	if b.HasHitPlayer {
 		currentSpeed = b.Speed
-		yAxisNormalizer = 0
 	} else {
 		currentSpeed = b.InitialSpeed
-		yAxisNormalizer = -1.5 // Causes ball to go down slowly
 	}
 
 	oldPos := BallPosition{ X: b.Pos.X, Y: b.Pos.Y }
@@ -144,9 +146,9 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 			currentSpeed = b.Speed
 		}
 
-		gapToRight := math.Min(b.Pos.X, rightPaddle.X)
-		gapToLeft := math.Min(b.Pos.X, leftPaddle.X)
-		if gapToRight > gapToLeft {
+		dstToRight := math.Min(b.Pos.X, rightPaddle.X)
+		dstToLeft := math.Min(b.Pos.X, leftPaddle.X)
+		if dstToRight > dstToLeft {
 			b.determineDirectionOnPaddleCollision(*rightPaddle)
 		} else {
 			b.determineDirectionOnPaddleCollision(*leftPaddle)
@@ -171,7 +173,7 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 	}
 
 	b.Pos.X += float64(currentSpeed * b.xDirection.Int())
-	b.Pos.Y += float64(currentSpeed * b.yDirection.Int()) + float64(yAxisNormalizer)
+	b.Pos.Y += float64(currentSpeed * b.yDirection.Int()) + float64(b.verticality)
 
 	b.ImgOpts.GeoM.Translate(b.Pos.X - oldPos.X, b.Pos.Y - oldPos.Y)
 }
