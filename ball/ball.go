@@ -119,15 +119,13 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 	}
 
 	// Check paddles collision
-	fmt.Println(b.Pos.X, rightPaddle.X)
-	fmt.Println(b.Pos.Y, rightPaddle.X)
-	if b.Pos.X >= rightPaddle.X &&
-	   b.Pos.Y <= rightPaddle.Y + float64(rightPaddle.Height/2) &&
-	   b.Pos.Y >= rightPaddle.Y || 
+	if b.Pos.X >= rightPaddle.X - float64(rightPaddle.Width) &&
+	   b.Pos.Y < rightPaddle.Y + float64(rightPaddle.Height/2) &&
+	   b.Pos.Y > rightPaddle.Y - float64(rightPaddle.Height/2) || 
 
-	   b.Pos.X <= leftPaddle.X && 
-	   b.Pos.Y <= leftPaddle.Y + float64(leftPaddle.Height/2) &&
-	   b.Pos.Y >= leftPaddle.Y {
+	   b.Pos.X <= leftPaddle.X + float64(leftPaddle.Width) && 
+	   b.Pos.Y < leftPaddle.Y + float64(leftPaddle.Height/2) &&
+	   b.Pos.Y > leftPaddle.Y - float64(leftPaddle.Height/2) {
 		if !b.HasHitPlayer {
 			b.HasHitPlayer = true
 			currentSpeed = b.Speed
@@ -139,13 +137,15 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 	if b.Pos.X > float64(window.Win.Width) {
 		// Set score
 		rightPlayer.Score += 1
+		fmt.Println("Right player scored! Score now:", rightPlayer.Score)
 		// Reset ball
 		b.Reset()
 
 	// Ball went in for left player
-	} else if b.Pos.X <= 0 {
+	} else if b.Pos.X <= float64(0 + leftPaddle.Width) {
 		// Set score
 		leftPlayer.Score += 1
+		fmt.Println("Left player scored! Score now:", leftPlayer.Score)
 		// Reset ball
 		b.Reset()
 	}
