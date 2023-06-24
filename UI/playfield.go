@@ -7,6 +7,7 @@ import (
 )
 
 type Playfield struct {
+	Height int
 	Window window.Window
 	Img *ebiten.Image 
     ImgOptsTop ebiten.DrawImageOptions
@@ -14,7 +15,7 @@ type Playfield struct {
 }
 
 func (pf *Playfield) Init(color color.Color) {
-    pf.Img = ebiten.NewImage(window.Win.Width, 10)
+    pf.Img = ebiten.NewImage(window.Win.Width, pf.Height)
 	pf.Img.Fill(color)
 
 	// Draw the line across the screen
