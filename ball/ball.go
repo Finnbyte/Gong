@@ -121,8 +121,14 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 
 	oldPos := BallPosition{ X: b.Pos.X, Y: b.Pos.Y }
 
+	// Check playfield collision
+	if b.Pos.Y >= float64(window.Win.Height - playfield.Height) || b.Pos.Y <= float64(playfield.Height) {
+		b.SwapDirection(&b.yDirection)
+	}
+
 	// Check paddles collision
 	fmt.Println(b.Pos.X, rightPaddle.X)
+	fmt.Println(b.Pos.Y, rightPaddle.X)
 	if b.Pos.X + float64(rightPaddle.Width) >= rightPaddle.X || b.Pos.X <= leftPaddle.X {
 		if !b.HasHitPlayer {
 			b.HasHitPlayer = true

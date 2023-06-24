@@ -60,7 +60,7 @@ func NewGame() *Game {
 			},
 		},
 		ball: pongBall.Ball{
-			Pos: pongBall.BallPosition{X: window.Win.CenterX(), Y: window.Win.CenterY() - 100},
+			Pos: pongBall.BallPosition{X: window.Win.CenterX(), Y: window.Win.CenterY()},
 			Radius: BALL_RADIUS,
 			Speed: BALL_SPEED,
 			InitialSpeed: BALL_SPEED_INITIAL,
