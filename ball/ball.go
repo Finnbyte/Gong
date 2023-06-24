@@ -3,6 +3,7 @@ package ball
 import (
 	"fmt"
 	ui "gong/UI"
+	"math"
 	"gong/paddle"
 	"gong/player"
 	"gong/window"
@@ -99,6 +100,16 @@ func (b *Ball) Reset() {
 	b.yDirection = DOWN
 }
 
+func (b *Ball) determineDirectionOnPaddleCollision(paddle paddle.Paddle) {
+	if b.Pos.Y > paddle.Y && b.Pos.Y <= paddle.Y + float64(paddle.Height/2) {
+		b.SwapDirection(&b.xDirection)
+		b.yDirection = UP
+	} else {
+		b.SwapDirection(&b.xDirection)
+		b.yDirection = DOWN
+	}
+}
+
 func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.Paddle, rightPlayer, leftPlayer *player.Player) {
 	var currentSpeed int
 	var yAxisNormalizer float64
@@ -119,18 +130,27 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 	}
 
 	// Check paddles collision
+	_, cursorY := ebiten.CursorPosition()
+	fmt.Println(rightPaddle.Y, cursorY)
 	if b.Pos.X >= rightPaddle.X - float64(rightPaddle.Width) &&
-	   b.Pos.Y < rightPaddle.Y + float64(rightPaddle.Height/2) &&
-	   b.Pos.Y > rightPaddle.Y - float64(rightPaddle.Height/2) || 
+	   b.Pos.Y > rightPaddle.Y &&
+	   b.Pos.Y < rightPaddle.Y + float64(rightPaddle.Height) || 
 
 	   b.Pos.X <= leftPaddle.X + float64(leftPaddle.Width) && 
-	   b.Pos.Y < leftPaddle.Y + float64(leftPaddle.Height/2) &&
-	   b.Pos.Y > leftPaddle.Y - float64(leftPaddle.Height/2) {
+	   b.Pos.Y > leftPaddle.Y &&
+	   b.Pos.Y < leftPaddle.Y + float64(leftPaddle.Height) {
 		if !b.HasHitPlayer {
 			b.HasHitPlayer = true
 			currentSpeed = b.Speed
 		}
-		b.SwapDirection(&b.xDirection)
+
+		gapToRight := math.Min(b.Pos.X, rightPaddle.X)
+		gapToLeft := math.Min(b.Pos.X, leftPaddle.X)
+		if gapToRight > gapToLeft {
+			b.determineDirectionOnPaddleCollision(*rightPaddle)
+		} else {
+			b.determineDirectionOnPaddleCollision(*leftPaddle)
+		}
 	}
 
 	// Ball went in for right player
