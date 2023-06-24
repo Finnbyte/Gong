@@ -136,16 +136,16 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 	// Ball went in for right player
 	if b.Pos.X > float64(window.Win.Width) {
 		// Set score
-		rightPlayer.Score += 1
-		fmt.Println("Right player scored! Score now:", rightPlayer.Score)
+		leftPlayer.Score += 1
+		fmt.Println("Left player scored! Score now:", leftPlayer.Score)
 		// Reset ball
 		b.Reset()
 
 	// Ball went in for left player
 	} else if b.Pos.X <= float64(0 + leftPaddle.Width) {
 		// Set score
-		leftPlayer.Score += 1
-		fmt.Println("Left player scored! Score now:", leftPlayer.Score)
+		rightPlayer.Score += 1
+		fmt.Println("Right player scored! Score now:", rightPlayer.Score)
 		// Reset ball
 		b.Reset()
 	}
