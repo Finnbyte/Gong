@@ -52,7 +52,7 @@ func NewGame() *Game {
 		rightPlayer: player.Player{ 
 			Score: 0, 
 			Paddle: paddle.Paddle{
-				X: float64(window.Win.Width) - 30, 
+				X: float64(window.Win.Width - PADDLE_WIDTH - 20.0), 
 				Y: window.Win.CenterY(),
 				Width: PADDLE_WIDTH,
 				Height: PADDLE_HEIGHT,
@@ -68,7 +68,7 @@ func NewGame() *Game {
 		},
 		UI: ui.UI{
 			Separator: ui.Separator{Width: 3},
-			Playfield: ui.Playfield{Window: window.Win},
+			Playfield: ui.Playfield{Window: window.Win, Height: 10},
 		},
 	}
 
@@ -116,7 +116,7 @@ func (g *Game) Update() error {
 		g.rightPlayer.Paddle.MoveDown()
 	}
 
-	g.ball.Update(&g.rightPlayer.Paddle, &g.leftPlayer.Paddle, &g.rightPlayer, &g.leftPlayer)
+	g.ball.Update(&g.UI.Playfield, &g.rightPlayer.Paddle, &g.leftPlayer.Paddle, &g.rightPlayer, &g.leftPlayer)
 
     return nil
 }
