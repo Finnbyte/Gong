@@ -26,7 +26,7 @@ func (body *PaddleBody) Center() float64 {
 type Paddle struct {
     X float64
 	Y float64
-    body PaddleBody
+    Body PaddleBody
 	playfield ui.Playfield
     Width int
 	Height int
@@ -45,9 +45,9 @@ func (p *Paddle) Init(playfield ui.Playfield, color color.Color) {
 	p.ImgOpts.GeoM.Translate(p.X, p.Y)
 
 	// Initialize body variable
-	p.body.Body = make([]float64, p.Height)
+	p.Body.Body = make([]float64, p.Height)
 	for i := 0; i < p.Height; i++ {
-		p.body.Body[i] = p.Y + 1.0
+		p.Body.Body[i] = p.Y + 1.0
 	}
 }
 
@@ -57,11 +57,11 @@ func (p *Paddle) move(directionModifier float64) {
 	boundaryCollisionPush := p.Speed * 2 // Pushes paddle by value when colliding with playfield
 
 	// Bottom
-	if int(p.body.Tail() + p.Speed) >= minY {
+	if int(p.Body.Tail()) >= minY {
 		p.Y = float64(minY) + -boundaryCollisionPush 
 
 	// Top
-	} else if int(p.body.Head() - p.Speed) <= maxY {
+	} else if int(p.Body.Head()) <= maxY {
 		p.Y = float64(maxY) + boundaryCollisionPush 
 
 	// Movement allowed
@@ -71,7 +71,7 @@ func (p *Paddle) move(directionModifier float64) {
 
 	// Update body
 	for i := 0; i < p.Height; i++ {
-		p.body.Body[i] = p.Y - 1.0
+		p.Body.Body[i] = p.Y - 1.0
 	}
 
 	// Update paddle on screen
