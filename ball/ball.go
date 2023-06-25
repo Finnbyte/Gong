@@ -3,7 +3,6 @@ package ball
 import (
 	"fmt"
 	ui "gong/UI"
-	"math"
 	"gong/paddle"
 	"gong/player"
 	"gong/window"
@@ -106,21 +105,21 @@ func (b *Ball) Reset() {
 }
 
 func (b *Ball) determineDirectionOnPaddleCollision(bY float64, paddle *paddle.Paddle) {
-	centerAreaSeparator := 10
-	centerBottomLimit := paddle.Y + float64(paddle.Height/2) - float64(centerAreaSeparator)
-	centerTopLimit := paddle.Y + float64(paddle.Height/2) + float64(centerAreaSeparator)
+	centerAreaSeparator := 100
+	centerBottomLimit := paddle.Y + float64(paddle.Height/2) + float64(centerAreaSeparator)
+	centerTopLimit := paddle.Y + float64(paddle.Height/2) - float64(centerAreaSeparator)
 	fmt.Println(centerBottomLimit, centerTopLimit)
 	_, cursorY := ebiten.CursorPosition()
-	fmt.Println(cursorY)
+	fmt.Println(cursorY, paddle.Y)
 	// center segment
-	if bY <= centerTopLimit && bY >= centerBottomLimit {
+	if bY >= centerTopLimit && bY <= centerBottomLimit {
 		fmt.Println("hit center")
 		b.SwapDirection(&b.xDirection)
 		b.verticality = -1.5
 		b.SwapDirection(&b.yDirection)
 
 	// head segment
-	} else if bY > paddle.Y && bY <= paddle.Y + float64(paddle.Height/2) {
+	} else if bY >= paddle.Y && bY <= paddle.Y + float64(paddle.Height/2) {
 		fmt.Println("hit head")
 		b.SwapDirection(&b.xDirection)
 		b.verticality = 0
@@ -164,9 +163,9 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 			currentSpeed = b.Speed
 		}
 
-		dstToRight := math.Min(b.Pos.X, rightPaddle.X)
-		dstToLeft := math.Min(b.Pos.X, leftPaddle.X)
-		if dstToRight > dstToLeft {
+		// To use DRY principles, recheck which paddle the ball hit
+		// Handling this in one function seems more intuitive for me
+		if b.Pos.X >= rightPaddle.X - float64(rightPaddle.Width) {
 			b.determineDirectionOnPaddleCollision(b.Pos.Y, rightPaddle)
 		} else {
 			b.determineDirectionOnPaddleCollision(b.Pos.Y, leftPaddle)
