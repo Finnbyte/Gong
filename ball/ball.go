@@ -105,18 +105,17 @@ func (b *Ball) Reset() {
 }
 
 func (b *Ball) determineDirectionOnPaddleCollision(bY float64, paddle *paddle.Paddle) {
-	centerAreaSeparator := 100
-	centerBottomLimit := paddle.Y + float64(paddle.Height/2) + float64(centerAreaSeparator)
-	centerTopLimit := paddle.Y + float64(paddle.Height/2) - float64(centerAreaSeparator)
-	fmt.Println(centerBottomLimit, centerTopLimit)
-	_, cursorY := ebiten.CursorPosition()
-	fmt.Println(cursorY, paddle.Y)
+	centerAreaSeparator := 9
+	centerTopLimit := paddle.Y + float64(paddle.Height/2) + float64(centerAreaSeparator)
+	centerBottomLimit := paddle.Y + float64(paddle.Height/2) - float64(centerAreaSeparator)
+	fmt.Println(centerBottomLimit, centerTopLimit, bY)
 	// center segment
-	if bY >= centerTopLimit && bY <= centerBottomLimit {
+	if bY <= centerTopLimit && bY >= centerBottomLimit {
 		fmt.Println("hit center")
 		b.SwapDirection(&b.xDirection)
-		b.verticality = -1.5
-		b.SwapDirection(&b.yDirection)
+		b.verticality = -1
+		//b.SwapDirection(&b.yDirection)
+		b.yDirection = DOWN
 
 	// head segment
 	} else if bY >= paddle.Y && bY <= paddle.Y + float64(paddle.Height/2) {
@@ -181,7 +180,7 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 		b.Reset()
 
 	// Ball went in for left player
-	} else if b.Pos.X <= float64(0 + leftPaddle.Width) {
+	} else if b.Pos.X <= 0.0 {
 		// Set score
 		rightPlayer.Score += 1
 		fmt.Println("Right player scored! Score now:", rightPlayer.Score)
