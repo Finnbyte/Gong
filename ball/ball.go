@@ -105,12 +105,32 @@ func (b *Ball) Reset() {
 	b.verticality = -1.5
 }
 
-func (b *Ball) determineDirectionOnPaddleCollision(paddle paddle.Paddle) {
-	if b.Pos.Y > paddle.Y && b.Pos.Y <= paddle.Y + float64(paddle.Height/2) {
+func (b *Ball) determineDirectionOnPaddleCollision(bY float64, paddle *paddle.Paddle) {
+	centerAreaSeparator := 10
+	centerBottomLimit := paddle.Y + float64(paddle.Height/2) - float64(centerAreaSeparator)
+	centerTopLimit := paddle.Y + float64(paddle.Height/2) + float64(centerAreaSeparator)
+	fmt.Println(centerBottomLimit, centerTopLimit)
+	_, cursorY := ebiten.CursorPosition()
+	fmt.Println(cursorY)
+	// center segment
+	if bY <= centerTopLimit && bY >= centerBottomLimit {
+		fmt.Println("hit center")
 		b.SwapDirection(&b.xDirection)
+		b.verticality = -1.5
+		b.SwapDirection(&b.yDirection)
+
+	// head segment
+	} else if bY > paddle.Y && bY <= paddle.Y + float64(paddle.Height/2) {
+		fmt.Println("hit head")
+		b.SwapDirection(&b.xDirection)
+		b.verticality = 0
 		b.yDirection = UP
+
+	// tail segment
 	} else {
 		b.SwapDirection(&b.xDirection)
+		fmt.Println("hit tail")
+		b.verticality = 0
 		b.yDirection = DOWN
 	}
 }
@@ -132,8 +152,6 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 	}
 
 	// Check paddles collision
-	_, cursorY := ebiten.CursorPosition()
-	fmt.Println(rightPaddle.Y, cursorY)
 	if b.Pos.X >= rightPaddle.X - float64(rightPaddle.Width) &&
 	   b.Pos.Y > rightPaddle.Y &&
 	   b.Pos.Y < rightPaddle.Y + float64(rightPaddle.Height) || 
@@ -149,9 +167,9 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 		dstToRight := math.Min(b.Pos.X, rightPaddle.X)
 		dstToLeft := math.Min(b.Pos.X, leftPaddle.X)
 		if dstToRight > dstToLeft {
-			b.determineDirectionOnPaddleCollision(*rightPaddle)
+			b.determineDirectionOnPaddleCollision(b.Pos.Y, rightPaddle)
 		} else {
-			b.determineDirectionOnPaddleCollision(*leftPaddle)
+			b.determineDirectionOnPaddleCollision(b.Pos.Y, leftPaddle)
 		}
 	}
 
