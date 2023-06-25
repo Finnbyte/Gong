@@ -1,9 +1,11 @@
 package paddle
 
 import (
-	"gong/window"
+	"fmt"
 	"gong/UI"
+	"gong/window"
 	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -41,28 +43,28 @@ func (p *Paddle) Init(playfield ui.Playfield, color color.Color) {
 	p.Img = ebiten.NewImage(p.Width, p.Height)
 	p.Img.Fill(color)
 
-	p.Y -= float64(p.Height / 2) // Account for height to center on the Y axis
+	// p.Y -= float64(p.Height / 2) // Account for height to center on the Y axis
 	p.ImgOpts.GeoM.Translate(p.X, p.Y)
 
 	// Initialize body variable
 	p.Body.Body = make([]float64, p.Height)
 	for i := 0; i < p.Height; i++ {
-		p.Body.Body[i] = p.Y + 1.0
+		p.Body.Body[i] = p.Y + float64(i)
 	}
 }
 
 func (p *Paddle) move(directionModifier float64) {
 	oldYPos := p.Y
-	maxY, minY := 20, window.Win.Height - p.Height - 20
-	boundaryCollisionPush := p.Speed * 2 // Pushes paddle by value when colliding with playfield
+	maxY, minY := p.playfield.Height, window.Win.Height - p.playfield.Height
 
 	// Bottom
-	if int(p.Body.Tail()) >= minY {
-		p.Y = float64(minY) + -boundaryCollisionPush 
+	if int(p.Body.Tail()) + int(directionModifier) >= minY {
+		const boundaryCollisionPush = 100
+		p.Y = float64(minY) - boundaryCollisionPush
 
 	// Top
-	} else if int(p.Body.Head()) <= maxY {
-		p.Y = float64(maxY) + boundaryCollisionPush 
+	} else if int(p.Body.Head()) + int(directionModifier) <= maxY {
+		p.Y = float64(maxY)
 
 	// Movement allowed
 	} else {
@@ -71,8 +73,10 @@ func (p *Paddle) move(directionModifier float64) {
 
 	// Update body
 	for i := 0; i < p.Height; i++ {
-		p.Body.Body[i] = p.Y - 1.0
+		p.Body.Body[i] = p.Y + float64(i)
 	}
+
+	fmt.Println(p.Body.Tail())
 
 	// Update paddle on screen
 	p.ImgOpts.GeoM.Translate(0, p.Y - oldYPos)
