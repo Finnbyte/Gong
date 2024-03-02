@@ -5,9 +5,11 @@ import (
 	"gong/components/paddle"
 	"gong/components/player"
 	"gong/components/window"
-	"image/color"
+	. "gong/components/screen"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
+	"golang.org/x/image/colornames"
 )
 
 type BallPosition struct {
@@ -21,25 +23,6 @@ type Ball struct {
 	VelocityY                 int
 	VelocityX                 int
 	HasHitPlayer              bool
-	Img                       *ebiten.Image
-	ImgOpts                   ebiten.DrawImageOptions
-}
-
-func (b *Ball) Init(color color.Color) {
-	b.Img = ebiten.NewImage(b.Radius, b.Radius)
-
-	b.Img.Fill(color)
-
-	// Centers, accounting for ball's size
-	// DISABLED for now, makes calculating positions relative to paddles, etc. hard
-	// b.Pos.X -= float64(b.Radius)
-	// b.Pos.Y -= float64(b.Radius)
-
-	b.VelocityX = 2
-	b.VelocityY = 3
-
-	// Initializes ball to center of window area
-	b.ImgOpts.GeoM.Translate(float64(window.Win.CenterX()), float64(window.Win.CenterY()))
 }
 
 func (b *Ball) Reset() {
@@ -89,10 +72,8 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 
 	b.Pos.X += SPEED * b.VelocityX
 	b.Pos.Y += SPEED * b.VelocityY
-
-	b.ImgOpts.GeoM.Translate(float64(b.Pos.X-oldPos.X), float64(b.Pos.Y-oldPos.Y))
 }
 
 func (b *Ball) Draw(screen *ebiten.Image) {
-	screen.DrawImage(b.Img, &b.ImgOpts)
+	vector.DrawFilledRect(screen, float32(b.Pos.X), float32(b.Pos.Y), float32(b.Radius), float32(b.Radius), colornames.White, false)
 }
