@@ -2,9 +2,9 @@ package main
 
 import (
 	ui "gong/components/UI"
-	pongBall "gong/components/ball"
+	. "gong/components/ball"
 	"gong/components/paddle"
-	"gong/components/player"
+	. "gong/components/player"
 	. "gong/components/screen"
 	"log"
 	"os"
@@ -16,9 +16,9 @@ import (
 )
 
 type Game struct {
-	rightPlayer player.Player
-	leftPlayer  player.Player
-	ball        pongBall.Ball
+	rightPlayer Player
+	leftPlayer  Player
+	ball        Ball
 	UI          ui.UI
 }
 
@@ -51,8 +51,8 @@ func NewGame() *Game {
 				Height:      PADDLE_HEIGHT,
 			},
 		},
-		ball: pongBall.Ball{
-			Pos:          pongBall.BallPosition{X: Screen.CenterX(), Y: Screen.CenterY()},
+		ball: Ball{
+			Pos:          BallPosition{X: Screen.CenterX(), Y: Screen.CenterY()},
 			Radius:       BALL_RADIUS,
 			NormalSpeed:  BALL_SPEED,
 			VelocityX:    BALL_INITIAL_VELOCITY_X,
