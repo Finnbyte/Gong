@@ -13,5 +13,9 @@ type Separator struct {
 func (s *Separator) Draw(screen *ebiten.Image) {
 	screenWidth := screen.Bounds().Dx()
 	screenHeight := screen.Bounds().Dy()
-	vector.StrokeLine(screen, float32(screenWidth)/2, 0, float32(screenWidth)/2, float32(screenHeight), float32(s.Width), colornames.White, false)
+	const LINE_HEIGHT = 12
+	const LINE_GAP = 30
+	for y := 8; y < screenHeight; y += LINE_GAP {
+		vector.StrokeLine(screen, float32(screenWidth)/2, float32(y), float32(screenWidth)/2, float32(y)+LINE_HEIGHT, float32(s.Width), colornames.White, false)
+	}
 }
