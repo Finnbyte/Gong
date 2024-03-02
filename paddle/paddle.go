@@ -10,19 +10,20 @@ import (
 )
 
 type PaddleBody struct {
-    Body []float64 // Each element is an y location, and first element represents head
+    body []float64 // Each element is an y location, and first element represents head
+	Mid float64
 }
 
 func (body *PaddleBody) Head() float64 {
-    return body.Body[0]
+    return body.body[0]
 }
 
 func (body *PaddleBody) Tail() float64 {
-    return body.Body[len(body.Body) - 1]
+    return body.body[len(body.body) - 1]
 }
 
 func (body *PaddleBody) Center() float64 {
-    return body.Body[2]
+    return body.body[2]
 }
 
 type Paddle struct {
@@ -40,6 +41,7 @@ type Paddle struct {
 func (p *Paddle) Init(playfield ui.Playfield, color color.Color) {
 	p.playfield = playfield
 
+	// Create and color image representing segment of Paddle
 	p.Img = ebiten.NewImage(p.Width, p.Height)
 	p.Img.Fill(color)
 
