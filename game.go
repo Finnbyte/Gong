@@ -61,7 +61,7 @@ func NewGame() *Game {
 			HasHitPlayer: false,
 		},
 		UI: ui.UI{
-			Separator: ui.Separator{Width: 3},
+			Separator: ui.Separator{Width: 5},
 			Playfield: ui.Playfield{Height: 10},
 		},
 	}
