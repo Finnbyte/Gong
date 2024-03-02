@@ -26,7 +26,7 @@ func NewGame() *Game {
 	// Get a font for scorecounters
 	font, err := truetype.Parse(fonts.MPlus1pRegular_ttf)
 	if err != nil {
-		log.Fatalf("Error parsing font: %s", err)
+		log.Fatalf("Error parsing font: %s\n", err)
 	}
 	fontFace := truetype.NewFace(font, &truetype.Options{Size: SCORECOUNTER_FONT_SIZE})
 
