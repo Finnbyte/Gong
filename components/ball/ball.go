@@ -4,7 +4,6 @@ import (
 	ui "gong/components/UI"
 	"gong/components/paddle"
 	"gong/components/player"
-	"gong/components/window"
 	. "gong/components/screen"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -33,14 +32,16 @@ func (b *Ball) Reset() {
 }
 
 func (b *Ball) collidedWithPaddle(p paddle.Paddle) bool {
-	if (b.Pos.X == p.X-b.Radius || b.Pos.X == p.X) && p.Y <= b.Pos.Y+b.Radius && b.Pos.Y <= p.Y+p.Height {
-		return true
+	if p.X <= b.Pos.X && b.Pos.X <= p.X+p.Width+p.StrokeWidth || p.X >= b.Pos.X && p.X-p.Width-p.StrokeWidth <= b.Pos.X {
+		if p.Y <= b.Pos.Y+b.Radius && b.Pos.Y <= p.Y+p.Height {
+			return true
+		}
 	}
 	return false
 }
 
 func (b *Ball) collidedWithPlayfield(pf ui.Playfield) bool {
-	if b.Pos.Y >= window.Win.Height-(pf.Height+b.Radius) || b.Pos.Y <= pf.Height {
+	if b.Pos.Y >= Screen.Height-(pf.Height+b.Radius) || b.Pos.Y <= pf.Height {
 		return true
 	}
 	return false
@@ -48,7 +49,6 @@ func (b *Ball) collidedWithPlayfield(pf ui.Playfield) bool {
 
 func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.Paddle, rightPlayer, leftPlayer *player.Player) {
 	var SPEED = b.InitialSpeed
-	oldPos := BallPosition{X: b.Pos.X, Y: b.Pos.Y}
 
 	if b.Pos.X > Screen.Width {
 		leftPlayer.Score += 1
