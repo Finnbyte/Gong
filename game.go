@@ -31,8 +31,8 @@ func NewGame() *Game {
 	fontFace := truetype.NewFace(font, &truetype.Options{Size: SCORECOUNTER_FONT_SIZE})
 
 	game := &Game{
-		leftPlayer: player.Player{
-			Score: 0,
+		leftPlayer: Player{
+			ScoreCounter: ui.ScoreCounter{Score: 0, X: Screen.HalfWidth() - SCORECOUNTER_GAP_FROM_CENTER, Y: SCORECOUNTER_GAP_FROM_TOP, FontFace: fontFace},
 			Paddle: paddle.Paddle{
 				X:           PADDLE_WALL_GAP,
 				Y:           Screen.CenterY(),
@@ -41,8 +41,8 @@ func NewGame() *Game {
 				Height:      PADDLE_HEIGHT,
 			},
 		},
-		rightPlayer: player.Player{
-			Score: 0,
+		rightPlayer: Player{
+			ScoreCounter: ui.ScoreCounter{Score: 0, X: Screen.HalfWidth() + SCORECOUNTER_GAP_FROM_CENTER, Y: SCORECOUNTER_GAP_FROM_TOP, FontFace: fontFace},
 			Paddle: paddle.Paddle{
 				X:           Screen.Width - PADDLE_WIDTH - PADDLE_WALL_GAP,
 				Y:           Screen.CenterY(),
@@ -106,6 +106,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.leftPlayer.Paddle.Draw(screen)
 	g.rightPlayer.Paddle.Draw(screen)
 	g.ball.Draw(screen)
+	g.leftPlayer.ScoreCounter.Draw(screen)
+	g.rightPlayer.ScoreCounter.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
