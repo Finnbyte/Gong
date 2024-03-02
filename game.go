@@ -6,9 +6,12 @@ import (
 	"gong/components/paddle"
 	"gong/components/player"
 	. "gong/components/screen"
+	"log"
 	"os"
 
+	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"golang.org/x/image/colornames"
 )
 
@@ -20,6 +23,13 @@ type Game struct {
 }
 
 func NewGame() *Game {
+	// Get a font for scorecounters
+	font, err := truetype.Parse(fonts.MPlus1pRegular_ttf)
+	if err != nil {
+		log.Fatalf("Error parsing font: %s", err)
+	}
+	fontFace := truetype.NewFace(font, &truetype.Options{Size: SCORECOUNTER_FONT_SIZE})
+
 	game := &Game{
 		leftPlayer: player.Player{
 			Score: 0,
