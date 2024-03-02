@@ -1,12 +1,13 @@
 package ball
 
 import (
-	"github.com/hajimehoshi/ebiten/v2"
 	ui "gong/components/UI"
 	"gong/components/paddle"
 	"gong/components/player"
 	"gong/components/window"
 	"image/color"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type BallPosition struct {
@@ -14,14 +15,14 @@ type BallPosition struct {
 }
 
 type Ball struct {
-	Radius              int
+	Radius                    int
 	NormalSpeed, InitialSpeed int
-	Pos                 BallPosition
-	VelocityY           int
-	VelocityX           int
-	HasHitPlayer        bool
-	Img                 *ebiten.Image
-	ImgOpts             ebiten.DrawImageOptions
+	Pos                       BallPosition
+	VelocityY                 int
+	VelocityX                 int
+	HasHitPlayer              bool
+	Img                       *ebiten.Image
+	ImgOpts                   ebiten.DrawImageOptions
 }
 
 func (b *Ball) Init(color color.Color) {
@@ -49,21 +50,21 @@ func (b *Ball) Reset() {
 }
 
 func (b *Ball) collidedWithPaddle(p paddle.Paddle) bool {
-	if (b.Pos.X == p.X - b.Radius || b.Pos.X == p.X) && p.Y <= b.Pos.Y && b.Pos.Y <= p.Y + p.Height {
+	if (b.Pos.X == p.X-b.Radius || b.Pos.X == p.X) && p.Y <= b.Pos.Y+b.Radius && b.Pos.Y <= p.Y+p.Height {
 		return true
 	}
 	return false
 }
 
 func (b *Ball) collidedWithPlayfield(pf ui.Playfield) bool {
-	if b.Pos.Y >= window.Win.Height - (pf.Height + b.Radius) || b.Pos.Y <= pf.Height {
+	if b.Pos.Y >= window.Win.Height-(pf.Height+b.Radius) || b.Pos.Y <= pf.Height {
 		return true
 	}
 	return false
 }
 
 func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.Paddle, rightPlayer, leftPlayer *player.Player) {
-	var SPEED = b.InitialSpeed 
+	var SPEED = b.InitialSpeed
 	oldPos := BallPosition{X: b.Pos.X, Y: b.Pos.Y}
 
 	if b.Pos.X > window.Win.Width {
@@ -75,7 +76,7 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 	}
 
 	// Check playfield collision
-	if (b.collidedWithPlayfield(*playfield)) {
+	if b.collidedWithPlayfield(*playfield) {
 		b.VelocityY = -(b.VelocityY)
 	}
 

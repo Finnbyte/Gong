@@ -17,10 +17,8 @@ type Game struct {
 	rightPlayer player.Player
 	leftPlayer  player.Player
 	ball        pongBall.Ball
-
-	UI ui.UI
-
-	background color.Color
+	UI          ui.UI
+	background  color.Color
 }
 
 func NewGame() *Game {
