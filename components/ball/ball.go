@@ -51,10 +51,10 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 	var SPEED = b.InitialSpeed
 
 	if b.Pos.X > Screen.Width {
-		leftPlayer.Score += 1
+		leftPlayer.ScoreCounter.Score += 1
 		b.Reset()
 	} else if b.Pos.X <= 0.0 {
-		rightPlayer.Score += 1
+		rightPlayer.ScoreCounter.Score += 1
 		b.Reset()
 	}
 

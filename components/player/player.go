@@ -1,10 +1,11 @@
 package player
 
 import (
+	ui "gong/components/UI"
 	"gong/components/paddle"
 )
 
 type Player struct {
-	Score  int
-	Paddle paddle.Paddle
+	ScoreCounter ui.ScoreCounter
+	Paddle       paddle.Paddle
 }

@@ -2,27 +2,37 @@ package main
 
 import (
 	ui "gong/components/UI"
-	pongBall "gong/components/ball"
+	. "gong/components/ball"
 	"gong/components/paddle"
-	"gong/components/player"
+	. "gong/components/player"
 	. "gong/components/screen"
+	"log"
 	"os"
 
+	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"golang.org/x/image/colornames"
 )
 
 type Game struct {
-	rightPlayer player.Player
-	leftPlayer  player.Player
-	ball        pongBall.Ball
+	rightPlayer Player
+	leftPlayer  Player
+	ball        Ball
 	UI          ui.UI
 }
 
 func NewGame() *Game {
+	// Get a font for scorecounters
+	font, err := truetype.Parse(fonts.MPlus1pRegular_ttf)
+	if err != nil {
+		log.Fatalf("Error parsing font: %s", err)
+	}
+	fontFace := truetype.NewFace(font, &truetype.Options{Size: SCORECOUNTER_FONT_SIZE})
+
 	game := &Game{
-		leftPlayer: player.Player{
-			Score: 0,
+		leftPlayer: Player{
+			ScoreCounter: ui.ScoreCounter{Score: 0, X: Screen.HalfWidth() - SCORECOUNTER_GAP_FROM_CENTER, Y: SCORECOUNTER_GAP_FROM_TOP, FontFace: fontFace},
 			Paddle: paddle.Paddle{
 				X:           PADDLE_WALL_GAP,
 				Y:           Screen.CenterY(),
@@ -31,8 +41,8 @@ func NewGame() *Game {
 				Height:      PADDLE_HEIGHT,
 			},
 		},
-		rightPlayer: player.Player{
-			Score: 0,
+		rightPlayer: Player{
+			ScoreCounter: ui.ScoreCounter{Score: 0, X: Screen.HalfWidth() + SCORECOUNTER_GAP_FROM_CENTER, Y: SCORECOUNTER_GAP_FROM_TOP, FontFace: fontFace},
 			Paddle: paddle.Paddle{
 				X:           Screen.Width - PADDLE_WIDTH - PADDLE_WALL_GAP,
 				Y:           Screen.CenterY(),
@@ -41,8 +51,8 @@ func NewGame() *Game {
 				Height:      PADDLE_HEIGHT,
 			},
 		},
-		ball: pongBall.Ball{
-			Pos:          pongBall.BallPosition{X: Screen.CenterX(), Y: Screen.CenterY()},
+		ball: Ball{
+			Pos:          BallPosition{X: Screen.CenterX(), Y: Screen.CenterY()},
 			Radius:       BALL_RADIUS,
 			NormalSpeed:  BALL_SPEED,
 			VelocityX:    BALL_INITIAL_VELOCITY_X,
@@ -96,6 +106,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.leftPlayer.Paddle.Draw(screen)
 	g.rightPlayer.Paddle.Draw(screen)
 	g.ball.Draw(screen)
+	g.leftPlayer.ScoreCounter.Draw(screen)
+	g.rightPlayer.ScoreCounter.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
