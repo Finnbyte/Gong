@@ -53,7 +53,7 @@ func NewGame() *Game {
 
 func (g *Game) Update() error {
 	// Quit Game
-	if ebiten.IsKeyPressed(ebiten.KeyQ) {
+	if ebiten.IsKeyPressed(ebiten.KeyQ) || ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		os.Exit(0)
 	}
 
