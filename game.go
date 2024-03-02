@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	ui "gong/components/UI"
 	pongBall "gong/components/ball"
 	"gong/components/paddle"
@@ -22,7 +21,6 @@ type Game struct {
 }
 
 func NewGame() *Game {
-	fmt.Println(PADDLE_WIDTH)
 	game := &Game{
 		leftPlayer: player.Player{
 			Score: 0,
