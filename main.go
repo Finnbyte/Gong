@@ -19,7 +19,7 @@ const (
 
 	BALL_INITIAL_VELOCITY_X = 2
 	BALL_INITIAL_VELOCITY_Y = 3
-	BALL_RADIUS             = 22
+	BALL_RADIUS             = 16
 	BALL_SPEED              = 4
 	BALL_SPEED_INITIAL      = 2
 )
