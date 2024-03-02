@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gong/components/window"
+	. "gong/components/screen"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -24,7 +24,7 @@ func main() {
 	ebiten.SetWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT)
 	ebiten.SetWindowTitle("Gong - The Go Pong!")
 
-	window.Win = window.Window{Width: WINDOW_WIDTH, Height: WINDOW_HEIGHT}
+	Screen = ScreenHelper{Width: WINDOW_WIDTH, Height: WINDOW_HEIGHT}
 
 	var game ebiten.Game = NewGame()
 
