@@ -10,6 +10,7 @@ import (
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"golang.org/x/image/colornames"
 )
 
 type Game struct {
@@ -17,7 +18,6 @@ type Game struct {
 	leftPlayer  player.Player
 	ball        pongBall.Ball
 	UI          ui.UI
-	background  color.Color
 }
 
 func NewGame() *Game {
@@ -53,23 +53,6 @@ func NewGame() *Game {
 		},
 	}
 
-	// Define colors
-	separatorColor := color.RGBA{R: 173, G: 127, B: 168, A: 255}
-	topBottomBorderColor := color.RGBA{R: 181, G: 137, B: 0, A: 255}
-	paddleColor := color.RGBA{R: 253, G: 235, B: 208, A: 255}
-	ballColor := color.RGBA{R: 235, G: 219, B: 178, A: 255}
-
-	// Initializing components
-	game.UI.Separator.Init(window.Win.Width, window.Win.Height, separatorColor)
-	game.UI.Playfield.Init(topBottomBorderColor)
-	game.leftPlayer.Paddle.Init(game.UI.Playfield, paddleColor)
-	game.rightPlayer.Paddle.Init(game.UI.Playfield, paddleColor)
-	game.ball.Init(ballColor)
-
-	// Set background color
-	game.background = color.RGBA{R: 40, G: 40, B: 40, A: 1}
-
-	// Return struct instance for runGame()
 	return game
 }
 
@@ -103,8 +86,7 @@ func (g *Game) Update() error {
 // Draw draws the game screen.
 // Draw is called every frame (typically 1/60[s] for 60Hz display).
 func (g *Game) Draw(screen *ebiten.Image) {
-	// Set bg
-	screen.Fill(g.background)
+	screen.Fill(colornames.Black)
 
 	g.UI.Separator.Draw(screen)
 	g.UI.Playfield.Draw(screen)
