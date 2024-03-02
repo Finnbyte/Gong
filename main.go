@@ -17,9 +17,11 @@ const (
 	PADDLE_SPEED        = 3.0
 	PADDLE_WALL_GAP     = 20
 
-	BALL_RADIUS        = 22
-	BALL_SPEED         = 4
-	BALL_SPEED_INITIAL = 2
+	BALL_INITIAL_VELOCITY_X = 2
+	BALL_INITIAL_VELOCITY_Y = 3
+	BALL_RADIUS             = 22
+	BALL_SPEED              = 4
+	BALL_SPEED_INITIAL      = 2
 )
 
 func main() {

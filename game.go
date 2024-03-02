@@ -26,6 +26,9 @@ func NewGame() *Game {
 			Paddle: paddle.Paddle{
 				X:           PADDLE_WALL_GAP,
 				Y:           Screen.CenterY(),
+				StrokeWidth: PADDLE_STROKE_WIDTH,
+				Width:       PADDLE_WIDTH,
+				Height:      PADDLE_HEIGHT,
 			},
 		},
 		rightPlayer: player.Player{
@@ -33,12 +36,17 @@ func NewGame() *Game {
 			Paddle: paddle.Paddle{
 				X:           Screen.Width - PADDLE_WIDTH - PADDLE_WALL_GAP,
 				Y:           Screen.CenterY(),
+				StrokeWidth: PADDLE_STROKE_WIDTH,
+				Width:       PADDLE_WIDTH,
+				Height:      PADDLE_HEIGHT,
 			},
 		},
 		ball: pongBall.Ball{
 			Pos:          pongBall.BallPosition{X: Screen.CenterX(), Y: Screen.CenterY()},
 			Radius:       BALL_RADIUS,
 			NormalSpeed:  BALL_SPEED,
+			VelocityX:    BALL_INITIAL_VELOCITY_X,
+			VelocityY:    BALL_INITIAL_VELOCITY_Y,
 			InitialSpeed: BALL_SPEED_INITIAL,
 			HasHitPlayer: false,
 		},
