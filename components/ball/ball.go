@@ -26,7 +26,7 @@ type Ball struct {
 }
 
 func (b *Ball) Reset() {
-	b.Pos.X, b.Pos.Y = window.Win.CenterX(), window.Win.CenterY()
+	b.Pos.X, b.Pos.Y = Screen.CenterX(), Screen.CenterY()
 	b.HasHitPlayer = false
 	b.VelocityX = -(b.VelocityX)
 	b.VelocityY = -(b.VelocityY)
@@ -50,7 +50,7 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 	var SPEED = b.InitialSpeed
 	oldPos := BallPosition{X: b.Pos.X, Y: b.Pos.Y}
 
-	if b.Pos.X > window.Win.Width {
+	if b.Pos.X > Screen.Width {
 		leftPlayer.Score += 1
 		b.Reset()
 	} else if b.Pos.X <= 0.0 {
@@ -67,6 +67,7 @@ func (b *Ball) Update(playfield *ui.Playfield, rightPaddle, leftPaddle *paddle.P
 		if !b.HasHitPlayer {
 			SPEED = b.NormalSpeed
 		}
+
 		b.VelocityX = -b.VelocityX
 	}
 
