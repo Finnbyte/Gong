@@ -5,8 +5,7 @@ import (
 	pongBall "gong/components/ball"
 	"gong/components/paddle"
 	"gong/components/player"
-	"gong/components/window"
-	"image/color"
+	. "gong/components/screen"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -25,23 +24,19 @@ func NewGame() *Game {
 		leftPlayer: player.Player{
 			Score: 0,
 			Paddle: paddle.Paddle{
-				X:      20.0,
-				Y:      window.Win.CenterY(),
-				Width:  PADDLE_WIDTH,
-				Height: PADDLE_HEIGHT,
+				X:           PADDLE_WALL_GAP,
+				Y:           Screen.CenterY(),
 			},
 		},
 		rightPlayer: player.Player{
 			Score: 0,
 			Paddle: paddle.Paddle{
-				X:      window.Win.Width - PADDLE_WIDTH - 20,
-				Y:      window.Win.CenterY(),
-				Width:  PADDLE_WIDTH,
-				Height: PADDLE_HEIGHT,
+				X:           Screen.Width - PADDLE_WIDTH - PADDLE_WALL_GAP,
+				Y:           Screen.CenterY(),
 			},
 		},
 		ball: pongBall.Ball{
-			Pos:          pongBall.BallPosition{X: window.Win.CenterX(), Y: window.Win.CenterY()},
+			Pos:          pongBall.BallPosition{X: Screen.CenterX(), Y: Screen.CenterY()},
 			Radius:       BALL_RADIUS,
 			NormalSpeed:  BALL_SPEED,
 			InitialSpeed: BALL_SPEED_INITIAL,
@@ -49,7 +44,7 @@ func NewGame() *Game {
 		},
 		UI: ui.UI{
 			Separator: ui.Separator{Width: 3},
-			Playfield: ui.Playfield{Window: window.Win, Height: 10},
+			Playfield: ui.Playfield{Height: 10},
 		},
 	}
 
@@ -96,5 +91,5 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return window.Win.Width, window.Win.Height
+	return Screen.Width, Screen.Height
 }
