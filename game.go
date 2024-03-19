@@ -15,6 +15,10 @@ import (
 	"golang.org/x/image/colornames"
 )
 
+var (
+	ticksPassed int
+)
+
 type Game struct {
 	rightPlayer Player
 	leftPlayer  Player
@@ -32,6 +36,7 @@ func NewGame() *Game {
 
 	game := &Game{
 		leftPlayer: Player{
+			AI:           true,
 			ScoreCounter: ui.ScoreCounter{Score: 0, X: Screen.HalfWidth() - SCORECOUNTER_GAP_FROM_CENTER, Y: SCORECOUNTER_GAP_FROM_TOP, FontFace: fontFace},
 			Paddle: paddle.Paddle{
 				X:           PADDLE_WALL_GAP,
@@ -75,15 +80,21 @@ func (g *Game) Update() error {
 		os.Exit(0)
 	}
 
-	// Left player controls
-	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		g.leftPlayer.Paddle.MoveUp()
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		g.leftPlayer.Paddle.MoveDown()
+	ticksPassed += ebiten.TPS()
+
+	// Left player
+	if g.leftPlayer.AI && ticksPassed >= 200 {
+		g.leftPlayer.Paddle.UpdateAI(g.ball.Pos.X, g.ball.Pos.Y)
+	} else {
+		if ebiten.IsKeyPressed(ebiten.KeyW) {
+			g.leftPlayer.Paddle.MoveUp()
+		}
+		if ebiten.IsKeyPressed(ebiten.KeyS) {
+			g.leftPlayer.Paddle.MoveDown()
+		}
 	}
 
-	// Right player controls
+	// Right player
 	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
 		g.rightPlayer.Paddle.MoveUp()
 	}

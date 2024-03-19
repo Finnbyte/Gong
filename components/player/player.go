@@ -6,6 +6,7 @@ import (
 )
 
 type Player struct {
+	AI           bool
 	ScoreCounter ui.ScoreCounter
 	Paddle       paddle.Paddle
 }

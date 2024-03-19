@@ -22,21 +22,33 @@ type Paddle struct {
 	velocityY   int
 }
 
-func (p *Paddle) update() {
+func (p *Paddle) move() {
 	minY, maxY := p.playfield.Height-1, Screen.Height-p.playfield.Height
 	newYVelocity := p.Y + p.velocityY
 	newYPos := utils.Clamp(newYVelocity, maxY-p.Height, minY+p.StrokeWidth)
 	p.Y = newYPos
 }
 
+func (p *Paddle) UpdateAI(ballX, ballY int) {
+
+	if ballY < p.Y {
+		p.velocityY = -SPEED
+		p.move()
+	} else if ballY > p.Y {
+		p.velocityY = SPEED
+		p.move()
+	}
+
+}
+
 func (p *Paddle) MoveUp() {
 	p.velocityY = -SPEED
-	p.update()
+	p.move()
 }
 
 func (p *Paddle) MoveDown() {
 	p.velocityY = +SPEED
-	p.update()
+	p.move()
 }
 
 func (p *Paddle) Draw(screen *ebiten.Image) {
