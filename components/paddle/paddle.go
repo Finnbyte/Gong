@@ -40,5 +40,5 @@ func (p *Paddle) MoveDown() {
 }
 
 func (p *Paddle) Draw(screen *ebiten.Image) {
-	vector.StrokeRect(screen, float32(p.X), float32(p.Y), float32(p.Width), float32(p.Height), 3, colornames.White, false)
+	vector.StrokeRect(screen, float32(p.X), float32(p.Y), float32(p.Width), float32(p.Height), float32(p.StrokeWidth), colornames.White, false)
 }
